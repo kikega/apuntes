@@ -1,0 +1,63 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Pygments Syntax Highlighting Styles (Classic light and dark friendly fallback) */
+.codehilite {
+    background-color: #1e293b;
+    color: #f8f8f2;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+}
+
+.codehilite pre {
+    margin: 0;
+}
+
+.dark .codehilite {
+    background-color: #0f172a;
+}
+
+/* Token styles inside codehilite */
+.codehilite .k { color: #ff79c6; font-weight: bold; } /* Keyword */
+.codehilite .n { color: #f8f8f2; } /* Name */
+.codehilite .s { color: #f1fa8c; } /* String */
+.codehilite .c { color: #6272a4; font-style: italic; } /* Comment */
+.codehilite .o { color: #ff79c6; } /* Operator */
+.codehilite .m { color: #bd93f9; } /* Number */
+.codehilite .g { color: #50fa7b; } /* Generic / function names */
+.codehilite .ow { color: #ff79c6; } /* Operator.Word */
+.codehilite .mi { color: #bd93f9; } /* Literal.Number.Integer */
+.codehilite .bp { color: #f8f8f2; } /* Built-in parameter */
+.codehilite .fm { color: #50fa7b; } /* Function name */
+
+/* RST content specific classes */
+.section {
+    margin-bottom: 2rem;
+}
+
+.section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.dark .section h2 {
+    color: #f1f5f9;
+}
+
+.section p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+}

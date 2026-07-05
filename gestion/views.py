@@ -89,6 +89,22 @@ class DashboardView(View):
             )
         )
 
+        # Filtrado de Temas para el Explorador
+        selected_categoria_slug = request.GET.get("categoria", "")
+        selected_familia_slug = request.GET.get("familia", "")
+        
+        selected_categoria = None
+        selected_familia = None
+        
+        temas_qs = Tema.objects.select_related("familia__categoria").prefetch_related("apuntes").all()
+        
+        if selected_categoria_slug:
+            selected_categoria = get_object_or_404(Categoria, slug=selected_categoria_slug)
+            temas_qs = temas_qs.filter(familia__categoria=selected_categoria)
+        elif selected_familia_slug:
+            selected_familia = get_object_or_404(Familia, slug=selected_familia_slug)
+            temas_qs = temas_qs.filter(familia=selected_familia)
+
         context = {
             "query": query,
             "search_results": search_results,
@@ -103,6 +119,9 @@ class DashboardView(View):
             "categorias_data": categorias_data,
             "apuntes_pendientes": apuntes_pendientes,
             "temas_pendientes": temas_pendientes,
+            "temas_explorador": temas_qs,
+            "selected_categoria": selected_categoria,
+            "selected_familia": selected_familia,
         }
         
         return render(request, "gestion/dashboard.html", context)

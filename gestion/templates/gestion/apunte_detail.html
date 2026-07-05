@@ -6,10 +6,10 @@
 {% block content %}
 <div class="space-y-6 animate-fade-in">
     <!-- BREADCRUMBS (JERARQUÍA) -->
-    <nav class="flex px-4 py-2 text-slate-500 bg-white dark:bg-slate-950 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg text-xs md:text-sm shadow-sm" aria-label="Breadcrumb">
+    <nav class="flex px-4 py-2 text-slate-500 bg-white dark:bg-darkCard dark:text-darkTextMuted border border-slate-200 dark:border-darkBorder rounded-lg text-xs md:text-sm shadow-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{% url 'gestion:dashboard' %}" class="inline-flex items-center hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium">
+                <a href="{% url 'gestion:dashboard' %}" class="inline-flex items-center hover:text-primary-600 dark:hover:text-amber-400 transition-colors font-medium">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
@@ -37,20 +37,20 @@
                     <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-slate-500">{{ apunte.tema.nombre }}</span>
+                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">{{ apunte.tema.nombre }}</span>
                 </div>
             </li>
         </ol>
     </nav>
 
     <!-- CABECERA DEL APUNTE -->
-    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+    <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div class="space-y-1">
-            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-display leading-tight">
+            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-amber-500 font-display leading-tight">
                 {{ apunte.titulo }}
             </h1>
             <div class="flex flex-wrap gap-2 text-xs text-slate-400 mt-2 items-center">
-                <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400">
+                <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-darkBg text-slate-600 dark:text-slate-400">
                     {{ apunte.get_formato_display }}
                 </span>
                 <span>&bull;</span>
@@ -61,11 +61,11 @@
         </div>
 
         <!-- FORMULARIO DE ACTUALIZACIÓN DE ESTADO -->
-        <div class="bg-slate-50 dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 rounded-lg flex items-center space-x-3">
+        <div class="bg-slate-50 dark:bg-darkBg p-4 border border-slate-200 dark:border-darkBorder rounded-lg flex items-center space-x-3">
             <form method="POST" action="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex items-center space-x-2">
                 {% csrf_token %}
                 <label for="estado" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Estado de Estudio:</label>
-                <select name="estado" id="estado" onchange="this.form.submit()" class="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-1.5 focus:outline-none transition-colors">
+                <select name="estado" id="estado" onchange="this.form.submit()" class="bg-white dark:bg-darkCard border border-slate-300 dark:border-darkBorder text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-1.5 focus:outline-none transition-colors">
                     {% for key, val in estados_choices %}
                         <option value="{{ key }}" {% if apunte.estado == key %}selected{% endif %}>{{ val }}</option>
                     {% endfor %}
@@ -94,24 +94,24 @@
     <!-- CONTENIDO Y BARRA LATERAL -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <!-- ÁREA DEL TEXTO DEL APUNTE (3/4 ancho en desktop) -->
-        <article class="lg:col-span-3 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 md:p-8 shadow-sm">
+        <article class="lg:col-span-3 bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 md:p-8 shadow-sm">
             <!-- Render del apunte con el filtro seguro custom -->
             <div class="prose max-w-none dark:prose-invert 
-                        prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white
-                        prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-slate-900 prose-h1:pb-2
+                        prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-amber-500
+                        prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-darkBorder prose-h1:pb-2
                         prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4
                         prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:my-4
-                        prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-primary-300
-                        prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-white
-                        prose-code:text-primary-600 dark:prose-code:text-primary-400 prose-code:bg-slate-100 dark:prose-code:bg-slate-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
+                        prose-a:text-primary-600 dark:prose-a:text-amber-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-amber-300
+                        prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-slate-100
+                        prose-code:text-primary-600 dark:prose-code:text-amber-400 prose-code:bg-slate-100 dark:prose-code:bg-darkBg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
                         prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-0
                         prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
                         prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
                         prose-li:my-1.5
-                        prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-slate-400 prose-blockquote:my-4
+                        prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-darkTextMuted prose-blockquote:my-4
                         prose-table:w-full prose-table:border-collapse prose-table:my-6
-                        prose-th:bg-slate-50 dark:prose-th:bg-slate-900 prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-slate-800 prose-th:font-semibold prose-th:text-left
-                        prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-slate-800">
+                        prose-th:bg-slate-50 dark:prose-th:bg-[#1c2028] prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-darkBorder prose-th:font-semibold prose-th:text-left
+                        prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-darkBorder">
                 {{ apunte|render_content }}
             </div>
         </article>
@@ -119,21 +119,21 @@
         <!-- BARRA LATERAL (1/4 ancho en desktop) -->
         <aside class="space-y-6">
             <!-- Galería de Imágenes Asociadas -->
-            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-900 pb-2">
+            <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm space-y-4">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-amber-500 uppercase tracking-wider border-b border-slate-100 dark:border-darkBorder pb-2">
                     Imágenes del Apunte
                 </h3>
                 
                 {% if apunte.imagenes.all %}
                 <div class="space-y-3.5">
                     {% for img in apunte.imagenes.all %}
-                    <div class="group border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900 p-2 text-center shadow-xs">
+                    <div class="group border border-slate-200 dark:border-darkBorder rounded-lg overflow-hidden bg-slate-50 dark:bg-[#1c2028] p-2 text-center shadow-xs">
                         <img src="{{ img.imagen.url }}" alt="{{ img.descripcion|default:'Imagen de apunte' }}" class="max-h-40 mx-auto rounded object-contain mb-2 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('{{ img.imagen.url }}')">
                         <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mb-1" title="{{ img.descripcion }}">{{ img.descripcion|default:"Imagen cargada" }}</p>
                         
                         <!-- Caja de copiado de URL para renderizar en MD -->
                         <div class="mt-2 flex items-center space-x-1.5">
-                            <input type="text" readonly value="{{ img.imagen.url }}" id="img-path-{{ img.id }}" class="flex-1 text-[10px] bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 px-1 py-0.5 rounded font-mono select-all focus:outline-none">
+                            <input type="text" readonly value="{{ img.imagen.url }}" id="img-path-{{ img.id }}" class="flex-1 text-[10px] bg-white dark:bg-darkBg border border-slate-300 dark:border-darkBorder px-1 py-0.5 rounded font-mono select-all focus:outline-none">
                             <button onclick="copyToClipboard('img-path-{{ img.id }}', this)" class="p-1 bg-primary-600 hover:bg-primary-700 text-white rounded text-[10px] transition-colors" title="Copiar URL">
                                 Copiar
                             </button>
@@ -147,8 +147,8 @@
             </div>
 
             <!-- Navegación del mismo Tema -->
-            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-900 pb-2">
+            <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm space-y-3">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-amber-500 uppercase tracking-wider border-b border-slate-100 dark:border-darkBorder pb-2">
                     Otros en {{ apunte.tema.nombre }}
                 </h3>
                 
@@ -156,7 +156,7 @@
                 <ul class="space-y-2">
                     {% for rel in apuntes_relacionados %}
                     <li>
-                        <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors py-1">
+                        <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="flex items-center justify-between text-sm text-slate-600 dark:text-darkTextMuted hover:text-primary-600 dark:hover:text-amber-500 hover:underline transition-colors py-1">
                             <span class="truncate pr-2 font-medium">{{ rel.titulo }}</span>
                             {% if rel.estado == 'COMPLETADO' %}
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" title="Completado"></span>
