@@ -1,0 +1,232 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Dashboard | NotesDev{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- CABECERA -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">Estudio & Apuntes</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Monitorea tu progreso de estudio y accede a tus apuntes técnicos de manera eficiente.</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE RESULTADOS DE BÚSQUEDA (SI APLICA) -->
+    {% if query %}
+    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-900">
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white font-display flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                Resultados de búsqueda para "<span class="text-primary-600 dark:text-primary-400">{{ query }}</span>"
+            </h2>
+            <a href="{% url 'gestion:dashboard' %}" class="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-white font-medium flex items-center transition-colors">
+                Limpiar búsqueda
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </a>
+        </div>
+        
+        {% if search_results %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for apunte in search_results %}
+            <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="group block p-4 bg-slate-50 hover:bg-white dark:bg-slate-900 dark:hover:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-primary-500 dark:hover:border-primary-500 rounded-lg transition-all shadow-sm">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="text-xs font-semibold tracking-wide text-primary-600 dark:text-primary-400 uppercase">
+                            {{ apunte.tema.familia.categoria.nombre }} &rarr; {{ apunte.tema.nombre }}
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 mt-1 transition-colors">
+                            {{ apunte.titulo }}
+                        </h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-2 line-clamp-2">
+                            {{ apunte.contenido|truncatewords:20 }}
+                        </p>
+                    </div>
+                    <div>
+                        {% if apunte.estado == 'NO_EMPEZADO' %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
+                            <span class="w-1.5 h-1.5 mr-1 bg-rose-600 rounded-full animate-pulse"></span> No empezado
+                        </span>
+                        {% elif apunte.estado == 'EN_PROGRESO' %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
+                            En progreso
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
+                            Completado
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Sin resultados</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">No encontramos ningún apunte que coincida con tu búsqueda.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- GRID DE ESTADÍSTICAS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Tarjeta Temas -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-400">Temas Totales</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white font-display mt-0.5">{{ total_temas }}</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta Apuntes -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-400">Apuntes Totales</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white font-display mt-0.5">{{ total_apuntes }}</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta Pendientes -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-400">Pendientes de Repaso</p>
+                <p class="text-2xl font-bold text-slate-900 dark:text-white font-display mt-0.5">{{ no_empezados|add:en_progreso }}</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta Completados -->
+        <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm flex items-center space-x-4">
+            <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-400">Completados</p>
+                <div class="flex items-baseline space-x-1.5">
+                    <span class="text-2xl font-bold text-slate-900 dark:text-white font-display mt-0.5">{{ completados }}</span>
+                    <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">({{ progreso_general }}%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESO GENERAL DE ESTUDIO -->
+    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Progreso General del Estudio</h3>
+            <span class="text-sm font-bold text-primary-600 dark:text-primary-400 font-display">{{ progreso_general }}% Completado</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-600 to-secondary-500 h-full rounded-full transition-all duration-1000 ease-out" style="width: {{ progreso_general }}%"></div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL: DOS COLUMNAS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Columna Izquierda: Temas Pendientes de Repaso (2/3 de ancho) -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white font-display mb-4 border-b border-slate-100 dark:border-slate-900 pb-2">
+                    Apuntes Pendientes de Repaso
+                </h3>
+                
+                {% if apuntes_pendientes %}
+                <div class="divide-y divide-slate-100 dark:divide-slate-900">
+                    {% for apunte in apuntes_pendientes %}
+                    <div class="py-4 first:pt-0 last:pb-0 flex items-center justify-between group">
+                        <div class="min-w-0 pr-4">
+                            <div class="flex items-center space-x-1.5 text-xs text-slate-400 dark:text-slate-500">
+                                <span>{{ apunte.tema.familia.categoria.nombre }}</span>
+                                <span>&bull;</span>
+                                <span>{{ apunte.tema.nombre }}</span>
+                            </div>
+                            <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="block text-slate-900 dark:text-white font-semibold hover:text-primary-600 dark:hover:text-primary-400 mt-1 transition-colors text-sm truncate">
+                                {{ apunte.titulo }}
+                            </a>
+                            <span class="text-xs text-slate-400">Actualizado el {{ apunte.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="flex items-center space-x-3 flex-shrink-0">
+                            {% if apunte.estado == 'NO_EMPEZADO' %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
+                                No empezado
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
+                                En progreso
+                            </span>
+                            {% endif %}
+                            
+                            <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="p-1 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-md transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8 text-slate-500 dark:text-slate-400 text-sm">
+                    <svg class="mx-auto h-12 w-12 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>¡Excelente! No tienes apuntes pendientes de repasar.</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Progreso por Categoría (1/3 de ancho) -->
+        <div class="space-y-6">
+            <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white font-display mb-4 border-b border-slate-100 dark:border-slate-900 pb-2">
+                    Progreso por Categoría
+                </h3>
+                
+                {% if categorias_data %}
+                <div class="space-y-4">
+                    {% for item in categorias_data %}
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ item.categoria.nombre }}</span>
+                            <span class="text-slate-400">{{ item.completados }}/{{ item.total }} ({{ item.porcentaje }}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-primary-600 h-full rounded-full transition-all duration-500" style="width: {{ item.porcentaje }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center text-slate-400 text-sm py-4">No hay categorías registradas.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
