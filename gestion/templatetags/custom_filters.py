@@ -80,7 +80,7 @@ def render_content(apunte: Any) -> str:
             # writer_name='html4css1' extrae el fragmento de la sección del body
             parts = publish_parts(
                 content,
-                writer_name="html4css1",
+                writer_name="html5",
                 settings_overrides={"report_level": 5}  # Suprimir advertencias del compilador RST en el HTML
             )
             html = parts.get("html_body", "")

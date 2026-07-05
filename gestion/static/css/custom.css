@@ -69,20 +69,23 @@ h1, h2, h3, h4, h5, h6 {
     list-style-type: decimal !important;
 }
 
-/* RST Heading styles overrides (Ensure headers match dark mode amber theme) */
-.prose h1.title {
+/* Heading styles overrides (Ensure headers match dark mode amber theme for both MD and RST) */
+.prose h1, .prose h1.title {
     font-size: 1.875rem !important; /* text-3xl */
     font-weight: 800 !important;
-    margin-top: 1.5rem !important;
-    margin-bottom: 1.5rem !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 1.25rem !important;
     color: #0f172a !important; /* light mode text */
     font-family: 'Outfit', sans-serif !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 0.5rem !important;
 }
-.dark .prose h1.title {
+.dark .prose h1, .dark .prose h1.title {
     color: #fbbf24 !important; /* text-amber-400 */
+    border-color: #2d323f !important;
 }
 
-.prose h2.subtitle, .prose .section h2 {
+.prose h2, .prose p.subtitle, .prose h2.subtitle {
     font-size: 1.5rem !important; /* text-2xl */
     font-weight: 700 !important;
     margin-top: 1.75rem !important;
@@ -90,11 +93,11 @@ h1, h2, h3, h4, h5, h6 {
     color: #1e293b !important;
     font-family: 'Outfit', sans-serif !important;
 }
-.dark .prose h2.subtitle, .dark .prose .section h2 {
-    color: #f59e0b !important; /* text-amber-500 */
+.dark .prose h2, .dark .prose p.subtitle, .dark .prose h2.subtitle {
+    color: #fb923c !important; /* text-orange-400 (distinct H2 color) */
 }
 
-.prose .section h3 {
+.prose h3 {
     font-size: 1.25rem !important; /* text-xl */
     font-weight: 600 !important;
     margin-top: 1.5rem !important;
@@ -102,8 +105,20 @@ h1, h2, h3, h4, h5, h6 {
     color: #334155 !important;
     font-family: 'Outfit', sans-serif !important;
 }
-.dark .prose .section h3 {
+.dark .prose h3 {
     color: #f59e0b !important; /* text-amber-500 */
+}
+
+.prose h4 {
+    font-size: 1.125rem !important; /* text-lg */
+    font-weight: 600 !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #475569 !important;
+    font-family: 'Outfit', sans-serif !important;
+}
+.dark .prose h4 {
+    color: #d97706 !important; /* text-amber-600 */
 }
 
 /* Inline Code styling overrides (for both Markdown & RST) */
