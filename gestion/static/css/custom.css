@@ -7,57 +7,230 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Pygments Syntax Highlighting Styles (Classic light and dark friendly fallback) */
-.codehilite {
-    background-color: #1e293b;
-    color: #f8f8f2;
-    padding: 1.25rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    margin: 1.5rem 0;
+.codehilite, .prose pre.literal-block {
+    background-color: #1e293b !important;
+    color: #f8f8f2 !important;
+    padding: 1.25rem !important;
+    border-radius: 0.5rem !important;
+    overflow-x: auto !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    margin: 1.5rem 0 !important;
+    border: 1px solid #e2e8f0 !important; /* Added box border for light mode */
 }
 
 .codehilite pre {
     margin: 0;
 }
 
-.dark .codehilite {
-    background-color: #0f172a;
+.dark .codehilite, .dark .prose pre.literal-block {
+    background-color: #0f172a !important;
+    border-color: #2d323f !important; /* Dark mode box border */
 }
 
-/* Token styles inside codehilite */
-.codehilite .k { color: #ff79c6; font-weight: bold; } /* Keyword */
-.codehilite .n { color: #f8f8f2; } /* Name */
-.codehilite .s { color: #f1fa8c; } /* String */
-.codehilite .c { color: #6272a4; font-style: italic; } /* Comment */
-.codehilite .o { color: #ff79c6; } /* Operator */
-.codehilite .m { color: #bd93f9; } /* Number */
-.codehilite .g { color: #50fa7b; } /* Generic / function names */
-.codehilite .ow { color: #ff79c6; } /* Operator.Word */
-.codehilite .mi { color: #bd93f9; } /* Literal.Number.Integer */
-.codehilite .bp { color: #f8f8f2; } /* Built-in parameter */
-.codehilite .fm { color: #50fa7b; } /* Function name */
+/* Support both short Pygments classes (Markdown) and long Pygments classes (docutils RST) */
+.codehilite .k, pre.literal-block .keyword { color: #ff79c6 !important; font-weight: bold !important; } /* Keyword */
+.codehilite .n, pre.literal-block .name { color: #f8f8f2 !important; } /* Name */
+.codehilite .s, pre.literal-block .string, pre.literal-block .literal.string, pre.literal-block .literal.string.double { color: #f1fa8c !important; } /* String */
+.codehilite .c, pre.literal-block .comment { color: #6272a4 !important; font-style: italic !important; } /* Comment */
+.codehilite .o, pre.literal-block .operator { color: #ff79c6 !important; } /* Operator */
+.codehilite .m, pre.literal-block .number, pre.literal-block .literal.number { color: #bd93f9 !important; } /* Number */
+.codehilite .g, pre.literal-block .generic { color: #50fa7b !important; } /* Generic / function names */
+.codehilite .ow, pre.literal-block .operator.word { color: #ff79c6 !important; } /* Operator.Word */
+.codehilite .mi, pre.literal-block .literal.number.integer { color: #bd93f9 !important; } /* Literal.Number.Integer */
+.codehilite .bp, pre.literal-block .name.builtin.pseudo, pre.literal-block .name.builtin { color: #f8f8f2 !important; } /* Built-in parameter */
+.codehilite .fm, pre.literal-block .name.function { color: #50fa7b !important; } /* Function name */
 
-/* RST content specific classes */
-.section {
-    margin-bottom: 2rem;
+/* General List styling overrides (Tailwind Preflight resets lists to none, so we specify them explicitly for all lists) */
+.prose ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
 }
 
-.section h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: #1e293b;
+.prose ul li {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+    list-style-type: disc !important;
 }
 
-.dark .section h2 {
-    color: #f1f5f9;
+.prose ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
 }
 
-.section p {
-    margin-bottom: 1rem;
-    line-height: 1.75;
+.prose ol li {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+    list-style-type: decimal !important;
+}
+
+/* RST Heading styles overrides (Ensure headers match dark mode amber theme) */
+.prose h1.title {
+    font-size: 1.875rem !important; /* text-3xl */
+    font-weight: 800 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    color: #0f172a !important; /* light mode text */
+    font-family: 'Outfit', sans-serif !important;
+}
+.dark .prose h1.title {
+    color: #fbbf24 !important; /* text-amber-400 */
+}
+
+.prose h2.subtitle, .prose .section h2 {
+    font-size: 1.5rem !important; /* text-2xl */
+    font-weight: 700 !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 1rem !important;
+    color: #1e293b !important;
+    font-family: 'Outfit', sans-serif !important;
+}
+.dark .prose h2.subtitle, .dark .prose .section h2 {
+    color: #f59e0b !important; /* text-amber-500 */
+}
+
+.prose .section h3 {
+    font-size: 1.25rem !important; /* text-xl */
+    font-weight: 600 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    color: #334155 !important;
+    font-family: 'Outfit', sans-serif !important;
+}
+.dark .prose .section h3 {
+    color: #f59e0b !important; /* text-amber-500 */
+}
+
+/* Inline Code styling overrides (for both Markdown & RST) */
+.prose :not(pre) > code, .prose :not(pre) > tt {
+    color: #0e90eb !important; /* light mode primary */
+    background-color: #f1f5f9 !important; /* light gray */
+    padding: 0.125rem 0.375rem !important;
+    border-radius: 0.25rem !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 0.875rem !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.dark .prose :not(pre) > code, .dark .prose :not(pre) > tt {
+    color: #fbbf24 !important; /* text-amber-400 */
+    background-color: #232731 !important; /* darkCard */
+    border-color: #2d323f !important;
+}
+
+/* General spacing inside document sections */
+.prose .document {
+    width: 100%;
+}
+.prose .section p {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.75 !important;
+}
+
+/* RST Admonition (Note, Warning, Tip, etc.) styling */
+.prose .admonition {
+    padding: 1rem 1.25rem !important;
+    margin: 1.5rem 0 !important;
+    border-radius: 0.375rem !important;
+    border-left: 4px solid !important;
+}
+
+/* Default / General Admonition */
+.prose .admonition {
+    background-color: #f8fafc !important; /* slate-50 */
+    border-left-color: #64748b !important; /* slate-500 */
+}
+.dark .prose .admonition {
+    background-color: rgba(71, 85, 105, 0.15) !important; /* slate-600/15 */
+    border-left-color: #475569 !important; /* slate-600 */
+}
+
+/* Specific Admonitions: Note, Hint, Info */
+.prose .admonition.note, .prose .admonition.hint {
+    background-color: #eff6ff !important; /* blue-50 */
+    border-left-color: #3b82f6 !important; /* blue-500 */
+}
+.dark .prose .admonition.note, .dark .prose .admonition.hint {
+    background-color: rgba(30, 41, 59, 0.4) !important; /* dark slate bg */
+    border-left-color: #3b82f6 !important;
+}
+
+/* Specific Admonitions: Tip, Important */
+.prose .admonition.tip, .prose .admonition.important {
+    background-color: #f0fdf4 !important; /* emerald-50 */
+    border-left-color: #10b981 !important; /* emerald-500 */
+}
+.dark .prose .admonition.tip, .dark .prose .admonition.important {
+    background-color: rgba(6, 78, 59, 0.2) !important;
+    border-left-color: #10b981 !important;
+}
+
+/* Specific Admonitions: Warning, Attention, Caution */
+.prose .admonition.warning, .prose .admonition.attention, .prose .admonition.caution {
+    background-color: #fffbeb !important; /* amber-50 */
+    border-left-color: #f59e0b !important; /* amber-500 */
+}
+.dark .prose .admonition.warning, .dark .prose .admonition.attention, .dark .prose .admonition.caution {
+    background-color: rgba(120, 53, 4, 0.2) !important;
+    border-left-color: #f59e0b !important;
+}
+
+/* Specific Admonitions: Danger, Error */
+.prose .admonition.danger, .prose .admonition.error {
+    background-color: #fef2f2 !important; /* red-50 */
+    border-left-color: #ef4444 !important; /* red-500 */
+}
+.dark .prose .admonition.danger, .dark .prose .admonition.error {
+    background-color: rgba(153, 27, 27, 0.2) !important;
+    border-left-color: #ef4444 !important;
+}
+
+/* Admonition Title */
+.prose .admonition-title {
+    font-weight: 700 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+    font-family: 'Outfit', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 0.75rem !important; /* text-xs */
+}
+
+/* Admonition Title Colors */
+.prose .admonition.note .admonition-title, .prose .admonition.hint .admonition-title {
+    color: #1d4ed8 !important; /* blue-700 */
+}
+.dark .prose .admonition.note .admonition-title, .dark .prose .admonition.hint .admonition-title {
+    color: #60a5fa !important; /* blue-400 */
+}
+
+.prose .admonition.tip .admonition-title, .prose .admonition.important .admonition-title {
+    color: #047857 !important; /* emerald-700 */
+}
+.dark .prose .admonition.tip .admonition-title, .dark .prose .admonition.important .admonition-title {
+    color: #34d399 !important; /* emerald-400 */
+}
+
+.prose .admonition.warning .admonition-title, .prose .admonition.attention .admonition-title, .prose .admonition.caution .admonition-title {
+    color: #b45309 !important; /* amber-700 */
+}
+.dark .prose .admonition.warning .admonition-title, .dark .prose .admonition.attention .admonition-title, .dark .prose .admonition.caution .admonition-title {
+    color: #fbbf24 !important; /* amber-400 */
+}
+
+.prose .admonition.danger .admonition-title, .prose .admonition.error .admonition-title {
+    color: #b91c1c !important; /* red-700 */
+}
+.dark .prose .admonition.danger .admonition-title, .dark .prose .admonition.error .admonition-title {
+    color: #f87171 !important; /* red-400 */
+}
+
+/* Admonition Content paragraphs */
+.prose .admonition p.last {
+    margin-bottom: 0 !important;
 }

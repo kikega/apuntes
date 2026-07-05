@@ -44,162 +44,99 @@
     </nav>
 
     <!-- CABECERA DEL APUNTE -->
-    <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-        <div class="space-y-1">
-            <h1 class="text-3xl font-extrabold text-slate-900 dark:text-amber-500 font-display leading-tight">
-                {{ apunte.titulo }}
-            </h1>
-            <div class="flex flex-wrap gap-2 text-xs text-slate-400 mt-2 items-center">
-                <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-darkBg text-slate-600 dark:text-slate-400">
-                    {{ apunte.get_formato_display }}
-                </span>
-                <span>&bull;</span>
-                <span>Creado el {{ apunte.fecha_creacion|date:"d/m/Y H:i" }}</span>
-                <span>&bull;</span>
-                <span>Actualizado el {{ apunte.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
-            </div>
-        </div>
-
-        <!-- FORMULARIO DE ACTUALIZACIÓN DE ESTADO -->
-        <div class="bg-slate-50 dark:bg-darkBg p-4 border border-slate-200 dark:border-darkBorder rounded-lg flex items-center space-x-3">
-            <form method="POST" action="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex items-center space-x-2">
-                {% csrf_token %}
-                <label for="estado" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Estado de Estudio:</label>
-                <select name="estado" id="estado" onchange="this.form.submit()" class="bg-white dark:bg-darkCard border border-slate-300 dark:border-darkBorder text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-1.5 focus:outline-none transition-colors">
-                    {% for key, val in estados_choices %}
-                        <option value="{{ key }}" {% if apunte.estado == key %}selected{% endif %}>{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </form>
-            
-            <!-- Badge Visual del Estado -->
-            <div>
-                {% if apunte.estado == 'NO_EMPEZADO' %}
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
-                    No empezado
-                </span>
-                {% elif apunte.estado == 'EN_PROGRESO' %}
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
-                    En progreso
-                </span>
-                {% else %}
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
-                    Completado
-                </span>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTENIDO Y BARRA LATERAL -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- ÁREA DEL TEXTO DEL APUNTE (3/4 ancho en desktop) -->
-        <article class="lg:col-span-3 bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 md:p-8 shadow-sm">
-            <!-- Render del apunte con el filtro seguro custom -->
-            <div class="prose max-w-none dark:prose-invert 
-                        prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-amber-500
-                        prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-darkBorder prose-h1:pb-2
-                        prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4
-                        prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:my-4
-                        prose-a:text-primary-600 dark:prose-a:text-amber-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-amber-300
-                        prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-slate-100
-                        prose-code:text-primary-600 dark:prose-code:text-amber-400 prose-code:bg-slate-100 dark:prose-code:bg-darkBg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
-                        prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-0
-                        prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
-                        prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
-                        prose-li:my-1.5
-                        prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-darkTextMuted prose-blockquote:my-4
-                        prose-table:w-full prose-table:border-collapse prose-table:my-6
-                        prose-th:bg-slate-50 dark:prose-th:bg-[#1c2028] prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-darkBorder prose-th:font-semibold prose-th:text-left
-                        prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-darkBorder">
-                {{ apunte|render_content }}
-            </div>
-        </article>
-
-        <!-- BARRA LATERAL (1/4 ancho en desktop) -->
-        <aside class="space-y-6">
-            <!-- Galería de Imágenes Asociadas -->
-            <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm space-y-4">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-amber-500 uppercase tracking-wider border-b border-slate-100 dark:border-darkBorder pb-2">
-                    Imágenes del Apunte
-                </h3>
-                
-                {% if apunte.imagenes.all %}
-                <div class="space-y-3.5">
-                    {% for img in apunte.imagenes.all %}
-                    <div class="group border border-slate-200 dark:border-darkBorder rounded-lg overflow-hidden bg-slate-50 dark:bg-[#1c2028] p-2 text-center shadow-xs">
-                        <img src="{{ img.imagen.url }}" alt="{{ img.descripcion|default:'Imagen de apunte' }}" class="max-h-40 mx-auto rounded object-contain mb-2 cursor-pointer hover:opacity-90 transition-opacity" onclick="window.open('{{ img.imagen.url }}')">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mb-1" title="{{ img.descripcion }}">{{ img.descripcion|default:"Imagen cargada" }}</p>
-                        
-                        <!-- Caja de copiado de URL para renderizar en MD -->
-                        <div class="mt-2 flex items-center space-x-1.5">
-                            <input type="text" readonly value="{{ img.imagen.url }}" id="img-path-{{ img.id }}" class="flex-1 text-[10px] bg-white dark:bg-darkBg border border-slate-300 dark:border-darkBorder px-1 py-0.5 rounded font-mono select-all focus:outline-none">
-                            <button onclick="copyToClipboard('img-path-{{ img.id }}', this)" class="p-1 bg-primary-600 hover:bg-primary-700 text-white rounded text-[10px] transition-colors" title="Copiar URL">
-                                Copiar
-                            </button>
-                        </div>
-                    </div>
-                    {% endfor %}
+    <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm flex flex-col space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pb-4 border-b border-slate-100 dark:border-darkBorder/40">
+            <div class="space-y-1">
+                <h1 class="text-3xl font-extrabold text-slate-900 dark:text-amber-500 font-display leading-tight">
+                    {{ apunte.titulo }}
+                </h1>
+                <div class="flex flex-wrap gap-2 text-xs text-slate-400 mt-2 items-center">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-darkBg text-slate-600 dark:text-slate-400">
+                        {{ apunte.get_formato_display }}
+                    </span>
+                    <span>&bull;</span>
+                    <span>Creado el {{ apunte.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                    <span>&bull;</span>
+                    <span>Actualizado el {{ apunte.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
                 </div>
-                {% else %}
-                <p class="text-xs text-slate-400 dark:text-slate-500 italic">No hay imágenes asociadas a este apunte. Puedes agregarlas desde la interfaz del panel de administración.</p>
-                {% endif %}
             </div>
 
-            <!-- Navegación del mismo Tema -->
-            <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm space-y-3">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-amber-500 uppercase tracking-wider border-b border-slate-100 dark:border-darkBorder pb-2">
-                    Otros en {{ apunte.tema.nombre }}
-                </h3>
+            <!-- FORMULARIO DE ACTUALIZACIÓN DE ESTADO -->
+            <div class="bg-slate-50 dark:bg-darkBg p-4 border border-slate-200 dark:border-darkBorder rounded-lg flex items-center space-x-3 self-start md:self-auto">
+                <form method="POST" action="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex items-center space-x-2">
+                    {% csrf_token %}
+                    <label for="estado" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Estado de Estudio:</label>
+                    <select name="estado" id="estado" onchange="this.form.submit()" class="bg-white dark:bg-darkCard border border-slate-300 dark:border-darkBorder text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-1.5 focus:outline-none transition-colors">
+                        {% for key, val in estados_choices %}
+                            <option value="{{ key }}" {% if apunte.estado == key %}selected{% endif %}>{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
                 
-                {% if apuntes_relacionados %}
-                <ul class="space-y-2">
-                    {% for rel in apuntes_relacionados %}
-                    <li>
-                        <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="flex items-center justify-between text-sm text-slate-600 dark:text-darkTextMuted hover:text-primary-600 dark:hover:text-amber-500 hover:underline transition-colors py-1">
-                            <span class="truncate pr-2 font-medium">{{ rel.titulo }}</span>
-                            {% if rel.estado == 'COMPLETADO' %}
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" title="Completado"></span>
-                            {% elif rel.estado == 'EN_PROGRESO' %}
-                                <span class="w-2 h-2 rounded-full bg-sky-500 flex-shrink-0" title="En progreso"></span>
-                            {% else %}
-                                <span class="w-2 h-2 rounded-full bg-rose-400 flex-shrink-0" title="No empezado"></span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p class="text-xs text-slate-400 dark:text-slate-500 italic">Único apunte registrado bajo este tema.</p>
-                {% endif %}
+                <!-- Badge Visual del Estado -->
+                <div>
+                    {% if apunte.estado == 'NO_EMPEZADO' %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
+                        No empezado
+                    </span>
+                    {% elif apunte.estado == 'EN_PROGRESO' %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
+                        En progreso
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
+                        Completado
+                    </span>
+                    {% endif %}
+                </div>
             </div>
-        </aside>
+        </div>
+
+        <!-- RELACIONADOS EN LA PARTE SUPERIOR (HORIZONTAL) -->
+        {% if apuntes_relacionados %}
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+            <span class="text-xs font-bold text-slate-500 dark:text-darkTextMuted uppercase tracking-wider whitespace-nowrap">
+                Otros en {{ apunte.tema.nombre }}:
+            </span>
+            <div class="flex flex-wrap gap-2">
+                {% for rel in apuntes_relacionados %}
+                <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-darkBg transition-all">
+                    <span>{{ rel.titulo }}</span>
+                    {% if rel.estado == 'COMPLETADO' %}
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1.5" title="Completado"></span>
+                    {% elif rel.estado == 'EN_PROGRESO' %}
+                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 ml-1.5" title="En progreso"></span>
+                    {% else %}
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400 ml-1.5" title="No empezado"></span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
-</div>
 
-<script>
-    // Función JS para copiar la URL de la imagen al portapapeles
-    function copyToClipboard(inputId, buttonElement) {
-        const copyText = document.getElementById(inputId);
-        if (copyText) {
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); // For mobile devices
-            
-            navigator.clipboard.writeText(copyText.value).then(() => {
-                const originalText = buttonElement.textContent;
-                buttonElement.textContent = "Copiado";
-                buttonElement.classList.remove('bg-primary-600');
-                buttonElement.classList.add('bg-emerald-600');
-                
-                setTimeout(() => {
-                    buttonElement.textContent = originalText;
-                    buttonElement.classList.remove('bg-emerald-600');
-                    buttonElement.classList.add('bg-primary-600');
-                }, 1500);
-            }).catch(err => {
-                console.error('Error al copiar el texto: ', err);
-            });
-        }
-    }
-</script>
+    <!-- CONTENIDO COMPLETO (ANCHO TOTAL DEL CONTENEDOR) -->
+    <article class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 md:p-8 shadow-sm">
+        <!-- Render del apunte con el filtro seguro custom -->
+        <div class="prose max-w-none dark:prose-invert 
+                    prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-amber-500
+                    prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-darkBorder prose-h1:pb-2
+                    prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4
+                    prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:my-4
+                    prose-a:text-primary-600 dark:prose-a:text-amber-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-amber-300
+                    prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-slate-100
+                    prose-code:text-primary-600 dark:prose-code:text-amber-400 prose-code:bg-slate-100 dark:prose-code:bg-darkBg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
+                    prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-0
+                    prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
+                    prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
+                    prose-li:my-1.5
+                    prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-darkTextMuted prose-blockquote:my-4
+                    prose-table:w-full prose-table:border-collapse prose-table:my-6
+                    prose-th:bg-slate-50 dark:prose-th:bg-[#1c2028] prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-darkBorder prose-th:font-semibold prose-th:text-left
+                    prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-darkBorder">
+            {{ apunte|render_content }}
+        </div>
+    </article>
+</div>
 {% endblock %}

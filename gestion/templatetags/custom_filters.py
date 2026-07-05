@@ -29,6 +29,22 @@ def render_content(apunte: Any) -> str:
     content: str = apunte.contenido
     formato: str = apunte.formato.upper()
 
+    import os
+    import re
+
+    # Resolver nombres de imágenes en el texto con sus URLs reales de Django
+    try:
+        for img in apunte.imagenes.all():
+            disk_filename = os.path.basename(img.imagen.name)
+            base, ext = os.path.splitext(disk_filename)
+            match = re.match(r"^(.*?)(_[a-zA-Z0-9]+)?$", base)
+            if match:
+                original_base = match.group(1)
+                pattern = r"[a-zA-Z0-9_\-\.\/]*" + re.escape(original_base) + r"(_[a-zA-Z0-9]+)?" + re.escape(ext)
+                content = re.sub(pattern, img.imagen.url, content, flags=re.IGNORECASE)
+    except Exception as img_err:
+        logger.error(f"Error resolviendo nombres de imágenes: {img_err}")
+
     try:
         if formato == "MD":
             if markdown is None:
