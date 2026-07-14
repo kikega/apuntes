@@ -123,7 +123,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Inline Code styling overrides (for both Markdown & RST) */
 .prose :not(pre) > code, .prose :not(pre) > tt {
-    color: #0e90eb !important; /* light mode primary */
+    color: #2984D1 !important; /* light mode primary — sky-600 */
     background-color: #f1f5f9 !important; /* light gray */
     padding: 0.125rem 0.375rem !important;
     border-radius: 0.25rem !important;
@@ -167,12 +167,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Specific Admonitions: Note, Hint, Info */
 .prose .admonition.note, .prose .admonition.hint {
-    background-color: #eff6ff !important; /* blue-50 */
-    border-left-color: #3b82f6 !important; /* blue-500 */
+    background-color: #F0F9FF !important; /* sky-50 */
+    border-left-color: #34A6F4 !important; /* sky-500 */
 }
 .dark .prose .admonition.note, .dark .prose .admonition.hint {
-    background-color: rgba(30, 41, 59, 0.4) !important; /* dark slate bg */
-    border-left-color: #3b82f6 !important;
+    background-color: rgba(5, 47, 74, 0.35) !important; /* sky-950/35 */
+    border-left-color: #34A6F4 !important; /* sky-500 */
 }
 
 /* Specific Admonitions: Tip, Important */
@@ -218,10 +218,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Admonition Title Colors */
 .prose .admonition.note .admonition-title, .prose .admonition.hint .admonition-title {
-    color: #1d4ed8 !important; /* blue-700 */
+    color: #1C69A8 !important; /* sky-700 */
 }
 .dark .prose .admonition.note .admonition-title, .dark .prose .admonition.hint .admonition-title {
-    color: #60a5fa !important; /* blue-400 */
+    color: #21BCFF !important; /* sky-400 */
 }
 
 .prose .admonition.tip .admonition-title, .prose .admonition.important .admonition-title {

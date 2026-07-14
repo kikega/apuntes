@@ -7,12 +7,183 @@
     <!-- CABECERA -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-amber-500 font-display">Estudio & Apuntes</h1>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-amber-500 font-display">Estudio &amp; Apuntes</h1>
             <p class="text-slate-500 dark:text-slate-400 mt-1">Monitorea tu progreso de estudio y accede a tus apuntes técnicos de manera eficiente.</p>
+        </div>
+        <!-- Botón principal de gestión -->
+        <button id="btn-open-taxonomy-panel"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+            Gestionar Taxonomía
+        </button>
+    </div>
+
+    <!-- ===================================================================
+         PANEL DE GESTIÓN DE TAXONOMÍA (colapsable, 3 tabs)
+    =================================================================== -->
+    <div id="taxonomy-panel" class="hidden bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-2xl shadow-lg overflow-hidden transition-all">
+        <!-- Header del Panel -->
+        <div class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-secondary-500">
+            <div class="flex items-center gap-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                </svg>
+                <h2 class="text-lg font-bold text-white font-display">Gestión de Taxonomía</h2>
+                <span class="text-xs text-white/70 font-medium">Categorías · Familias · Temas</span>
+            </div>
+            <button id="btn-close-taxonomy-panel" class="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Tabs de Navegación -->
+        <div class="border-b border-slate-200 dark:border-darkBorder px-6">
+            <nav class="flex space-x-1 -mb-px" id="taxonomy-tabs">
+                <button class="taxonomy-tab-btn active-tab px-5 py-3 text-sm font-semibold border-b-2 border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400 transition-colors whitespace-nowrap" data-tab="categorias">
+                    📁 Categorías
+                    <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-full">{{ categorias_list.count }}</span>
+                </button>
+                <button class="taxonomy-tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors whitespace-nowrap" data-tab="familias">
+                    🗂 Familias
+                    <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full">{{ familias_list.count }}</span>
+                </button>
+                <button class="taxonomy-tab-btn px-5 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors whitespace-nowrap" data-tab="temas">
+                    📌 Temas
+                    <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full">{{ temas_list.count }}</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab: Categorías -->
+        <div id="tab-categorias" class="taxonomy-tab-content p-6">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Las categorías son el nivel superior de organización (ej. Programación, Bases de Datos).</p>
+                <button onclick="openCreateModal('categoria')"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Nueva Categoría
+                </button>
+            </div>
+            <div class="space-y-2 max-h-80 overflow-y-auto pr-1" id="list-categorias">
+                {% for cat in categorias_list %}
+                <div id="cat-row-{{ cat.id }}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-primary-300 dark:hover:border-primary-700 transition-all group">
+                    <div class="min-w-0">
+                        <p class="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">{{ cat.nombre }}</p>
+                        <p class="text-xs text-slate-400 font-mono">{{ cat.slug }}</p>
+                        {% if cat.descripcion %}<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-xs">{{ cat.descripcion }}</p>{% endif %}
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openEditModal('categoria', {{ cat.id }}, '{{ cat.nombre|escapejs }}', '{{ cat.slug|escapejs }}', '{{ cat.descripcion|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 rounded-lg transition-colors" title="Editar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="openDeleteModal('categoria', {{ cat.id }}, '{{ cat.nombre|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-slate-400 text-sm" id="empty-categorias">
+                    <svg class="mx-auto w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                    No hay categorías. Crea la primera.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tab: Familias -->
+        <div id="tab-familias" class="taxonomy-tab-content p-6 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Las familias agrupan temas dentro de una categoría (ej. Backend, Frontend).</p>
+                <button onclick="openCreateModal('familia')"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Nueva Familia
+                </button>
+            </div>
+            <div class="space-y-2 max-h-80 overflow-y-auto pr-1" id="list-familias">
+                {% for fam in familias_list %}
+                <div id="fam-row-{{ fam.id }}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-secondary-300 dark:hover:border-secondary-700 transition-all group">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{{ fam.categoria.nombre }}</span>
+                            <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="font-semibold text-sm text-slate-900 dark:text-slate-100">{{ fam.nombre }}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono">{{ fam.slug }}</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openEditModal('familia', {{ fam.id }}, '{{ fam.nombre|escapejs }}', '{{ fam.slug|escapejs }}', '{{ fam.descripcion|escapejs }}', {{ fam.categoria.id }}, '{{ fam.categoria.nombre|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-400 hover:bg-secondary-50 dark:hover:bg-secondary-950/30 rounded-lg transition-colors" title="Editar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="openDeleteModal('familia', {{ fam.id }}, '{{ fam.nombre|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-slate-400 text-sm" id="empty-familias">
+                    <svg class="mx-auto w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/></svg>
+                    No hay familias. Crea la primera.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tab: Temas -->
+        <div id="tab-temas" class="taxonomy-tab-content p-6 hidden">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Los temas son el nivel más específico dentro de una familia (ej. Django, FastAPI).</p>
+                <button onclick="openCreateModal('tema')"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg shadow-sm transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Nuevo Tema
+                </button>
+            </div>
+            <div class="space-y-2 max-h-80 overflow-y-auto pr-1" id="list-temas">
+                {% for tema in temas_list %}
+                <div id="tema-row-{{ tema.id }}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-amber-300 dark:hover:border-amber-700 transition-all group">
+                    <div class="min-w-0">
+                        <div class="flex items-center flex-wrap gap-1.5 mb-0.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{{ tema.familia.categoria.nombre }}</span>
+                            <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{{ tema.familia.nombre }}</span>
+                            <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <span class="font-semibold text-sm text-slate-900 dark:text-slate-100">{{ tema.nombre }}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono">{{ tema.slug }}</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openEditModal('tema', {{ tema.id }}, '{{ tema.nombre|escapejs }}', '{{ tema.slug|escapejs }}', '{{ tema.descripcion|escapejs }}', {{ tema.familia.id }}, '{{ tema.familia.nombre|escapejs }}', {{ tema.familia.categoria.id }}, '{{ tema.familia.categoria.nombre|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors" title="Editar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="openDeleteModal('tema', {{ tema.id }}, '{{ tema.nombre|escapejs }}')"
+                            class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-slate-400 text-sm" id="empty-temas">
+                    <svg class="mx-auto w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    No hay temas. Crea el primero.
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <!-- SECCIÓN DE RESULTADOS DE BÚSQUEDA (SI APLICA) -->
+    <!-- ===================================================================
+         SECCIÓN DE RESULTADOS DE BÚSQUEDA
+    =================================================================== -->
     {% if query %}
     <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-darkBorder">
@@ -20,16 +191,13 @@
                 <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
-                Resultados de búsqueda para "<span class="text-primary-600 dark:text-primary-400">{{ query }}</span>"
+                Resultados para "<span class="text-primary-600 dark:text-primary-400">{{ query }}</span>"
             </h2>
             <a href="{% url 'gestion:dashboard' %}" class="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-white font-medium flex items-center transition-colors">
-                Limpiar búsqueda
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
+                Limpiar
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </a>
         </div>
-        
         {% if search_results %}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% for apunte in search_results %}
@@ -39,26 +207,16 @@
                         <div class="text-xs font-semibold tracking-wide text-primary-600 dark:text-primary-400 uppercase">
                             {{ apunte.tema.familia.categoria.nombre }} &rarr; {{ apunte.tema.nombre }}
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-amber-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 mt-1 transition-colors">
-                            {{ apunte.titulo }}
-                        </h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-2 line-clamp-2">
-                            {{ apunte.contenido|truncatewords:20 }}
-                        </p>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-amber-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 mt-1 transition-colors">{{ apunte.titulo }}</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-2 line-clamp-2">{{ apunte.contenido|truncatewords:20 }}</p>
                     </div>
                     <div>
                         {% if apunte.estado == 'NO_EMPEZADO' %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
-                            <span class="w-1.5 h-1.5 mr-1 bg-rose-600 rounded-full animate-pulse"></span> No empezado
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900"><span class="w-1.5 h-1.5 mr-1 bg-rose-600 rounded-full animate-pulse"></span>No empezado</span>
                         {% elif apunte.estado == 'EN_PROGRESO' %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
-                            En progreso
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">En progreso</span>
                         {% else %}
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
-                            Completado
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">Completado</span>
                         {% endif %}
                     </div>
                 </div>
@@ -67,11 +225,9 @@
         </div>
         {% else %}
         <div class="text-center py-10">
-            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+            <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <h3 class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Sin resultados</h3>
-            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">No encontramos ningún apunte que coincida con tu búsqueda.</p>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">No encontramos ningún apunte que coincida.</p>
         </div>
         {% endif %}
     </div>
@@ -79,51 +235,36 @@
 
     <!-- GRID DE ESTADÍSTICAS -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- Tarjeta Temas -->
         <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm flex items-center space-x-4">
             <div class="p-3 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
             <div>
                 <p class="text-sm font-medium text-slate-400">Temas Totales</p>
                 <p class="text-2xl font-bold text-slate-900 dark:text-amber-500 font-display mt-0.5">{{ total_temas }}</p>
             </div>
         </div>
-
-        <!-- Tarjeta Apuntes -->
         <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm flex items-center space-x-4">
             <div class="p-3 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
             <div>
                 <p class="text-sm font-medium text-slate-400">Apuntes Totales</p>
                 <p class="text-2xl font-bold text-slate-900 dark:text-amber-500 font-display mt-0.5">{{ total_apuntes }}</p>
             </div>
         </div>
-
-        <!-- Tarjeta Pendientes -->
         <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm flex items-center space-x-4">
             <div class="p-3 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             </div>
             <div>
                 <p class="text-sm font-medium text-slate-400">Pendientes de Repaso</p>
                 <p class="text-2xl font-bold text-slate-900 dark:text-amber-500 font-display mt-0.5">{{ no_empezados|add:en_progreso }}</p>
             </div>
         </div>
-
-        <!-- Tarjeta Completados -->
         <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-5 shadow-sm flex items-center space-x-4">
             <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div>
                 <p class="text-sm font-medium text-slate-400">Completados</p>
@@ -135,7 +276,7 @@
         </div>
     </div>
 
-    <!-- PROGRESO GENERAL DE ESTUDIO -->
+    <!-- PROGRESO GENERAL -->
     <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-2">
             <h3 class="text-sm font-semibold text-slate-900 dark:text-amber-500 uppercase tracking-wider">Progreso General del Estudio</h3>
@@ -154,67 +295,41 @@
                     <svg class="w-5 h-5 mr-2 text-primary-600 dark:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                     </svg>
-                    {% if selected_categoria %}
-                        Temas en <span class="ml-1 text-primary-600 dark:text-amber-400">{{ selected_categoria.nombre }}</span>
-                    {% elif selected_familia %}
-                        Temas en <span class="ml-1 text-primary-600 dark:text-amber-400">{{ selected_familia.nombre }}</span>
-                    {% else %}
-                        Explorador de Temas
-                    {% endif %}
+                    {% if selected_categoria %}Temas en <span class="ml-1 text-primary-600 dark:text-amber-400">{{ selected_categoria.nombre }}</span>
+                    {% elif selected_familia %}Temas en <span class="ml-1 text-primary-600 dark:text-amber-400">{{ selected_familia.nombre }}</span>
+                    {% else %}Explorador de Temas{% endif %}
                 </h2>
                 <p class="text-xs text-slate-400 mt-1">
-                    {% if selected_categoria or selected_familia %}
-                        Mostrando temas filtrados por la barra lateral.
-                    {% else %}
-                        Todos los temas y apuntes técnicos registrados.
-                    {% endif %}
+                    {% if selected_categoria or selected_familia %}Mostrando temas filtrados.{% else %}Todos los temas y apuntes técnicos registrados.{% endif %}
                 </p>
             </div>
-            
-            <!-- Cuadro de Búsqueda de Temas -->
             <div class="relative max-w-xs w-full">
-                <input type="text" id="theme-search-input" placeholder="Filtrar temas por nombre..." class="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-darkTextMuted">
+                <input type="text" id="theme-search-input" placeholder="Filtrar temas por nombre..."
+                    class="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-darkTextMuted">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
+                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
         </div>
-
-        <!-- Temas Grid -->
         <div id="themes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {% for tema in temas_explorador %}
             <div class="theme-card bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl p-5 hover:shadow-md transition-all duration-200" data-theme-name="{{ tema.nombre|lower }}">
                 <div class="flex items-start justify-between border-b border-slate-200 dark:border-darkBorder pb-2.5 mb-3">
                     <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                            {{ tema.familia.categoria.nombre }} &rsaquo; {{ tema.familia.nombre }}
-                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ tema.familia.categoria.nombre }} &rsaquo; {{ tema.familia.nombre }}</span>
                         <h4 class="text-base font-bold text-slate-900 dark:text-amber-500 mt-0.5">{{ tema.nombre }}</h4>
                     </div>
                 </div>
-                
-                <!-- Apuntes del tema -->
                 <div class="space-y-2">
                     {% for apunte in tema.apuntes.all %}
                     <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex items-center justify-between p-2 rounded bg-white dark:bg-darkCard hover:bg-primary-50 dark:hover:bg-darkBg/60 border border-slate-100 dark:border-darkBorder/40 transition-colors group">
-                        <span class="text-xs font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600 dark:group-hover:text-amber-400 truncate pr-2">
-                            {{ apunte.titulo }}
-                        </span>
-                        
+                        <span class="text-xs font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600 dark:group-hover:text-amber-400 truncate pr-2">{{ apunte.titulo }}</span>
                         {% if apunte.estado == 'NO_EMPEZADO' %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex-shrink-0">
-                            No empezado
-                        </span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex-shrink-0">No empezado</span>
                         {% elif apunte.estado == 'EN_PROGRESO' %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/50 flex-shrink-0">
-                            En progreso
-                        </span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/50 flex-shrink-0">En progreso</span>
                         {% else %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 flex-shrink-0">
-                            Completado
-                        </span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 flex-shrink-0">Completado</span>
                         {% endif %}
                     </a>
                     {% empty %}
@@ -224,9 +339,7 @@
             </div>
             {% empty %}
             <div class="col-span-full text-center py-10">
-                <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V9a2 2 0 00-2-2M9 5h6"></path>
-                </svg>
+                <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V9a2 2 0 00-2-2M9 5h6"></path></svg>
                 <h4 class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Sin temas</h4>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">No encontramos ningún tema para la selección actual.</p>
             </div>
@@ -234,37 +347,11 @@
         </div>
     </div>
 
-    <!-- Script de Filtro en Tiempo Real en JS -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeSearchInput = document.getElementById('theme-search-input');
-            const themeCards = document.querySelectorAll('.theme-card');
-
-            if (themeSearchInput) {
-                themeSearchInput.addEventListener('input', (e) => {
-                    const searchVal = e.target.value.toLowerCase().trim();
-                    themeCards.forEach(card => {
-                        const themeName = card.getAttribute('data-theme-name');
-                        if (themeName && themeName.includes(searchVal)) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-            }
-        });
-    </script>
-
-    <!-- CONTENIDO PRINCIPAL: DOS COLUMNAS -->
+    <!-- DOS COLUMNAS: Pendientes + Progreso por Categoría -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Columna Izquierda: Temas Pendientes de Repaso (2/3 de ancho) -->
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-amber-500 font-display mb-4 border-b border-slate-100 dark:border-darkBorder pb-2">
-                    Apuntes Pendientes de Repaso
-                </h3>
-                
+                <h3 class="text-lg font-bold text-slate-900 dark:text-amber-500 font-display mb-4 border-b border-slate-100 dark:border-darkBorder pb-2">Apuntes Pendientes de Repaso</h3>
                 {% if apuntes_pendientes %}
                 <div class="divide-y divide-slate-100 dark:divide-darkBorder">
                     {% for apunte in apuntes_pendientes %}
@@ -275,26 +362,17 @@
                                 <span>&bull;</span>
                                 <span>{{ apunte.tema.nombre }}</span>
                             </div>
-                            <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="block text-slate-900 dark:text-amber-500 font-semibold hover:text-primary-600 dark:hover:text-amber-400 mt-1 transition-colors text-sm truncate">
-                                {{ apunte.titulo }}
-                            </a>
+                            <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="block text-slate-900 dark:text-amber-500 font-semibold hover:text-primary-600 dark:hover:text-amber-400 mt-1 transition-colors text-sm truncate">{{ apunte.titulo }}</a>
                             <span class="text-xs text-slate-400">Actualizado el {{ apunte.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
                         </div>
                         <div class="flex items-center space-x-3 flex-shrink-0">
                             {% if apunte.estado == 'NO_EMPEZADO' %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
-                                No empezado
-                            </span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">No empezado</span>
                             {% else %}
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
-                                En progreso
-                            </span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">En progreso</span>
                             {% endif %}
-                            
                             <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="p-1 text-slate-400 hover:text-primary-600 dark:hover:text-[#f59e0b] hover:bg-slate-50 dark:hover:bg-[#1c2028] rounded-md transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                             </a>
                         </div>
                     </div>
@@ -302,22 +380,16 @@
                 </div>
                 {% else %}
                 <div class="text-center py-8 text-slate-500 dark:text-slate-400 text-sm">
-                    <svg class="mx-auto h-12 w-12 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <svg class="mx-auto h-12 w-12 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>¡Excelente! No tienes apuntes pendientes de repasar.</span>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Columna Derecha: Progreso por Categoría (1/3 de ancho) -->
         <div class="space-y-6">
             <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl shadow-sm p-6">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-amber-500 font-display mb-4 border-b border-slate-100 dark:border-darkBorder pb-2">
-                    Progreso por Categoría
-                </h3>
-                
+                <h3 class="text-lg font-bold text-slate-900 dark:text-amber-500 font-display mb-4 border-b border-slate-100 dark:border-darkBorder pb-2">Progreso por Categoría</h3>
                 {% if categorias_data %}
                 <div class="space-y-4">
                     {% for item in categorias_data %}
@@ -339,4 +411,706 @@
         </div>
     </div>
 </div>
+
+<!-- =======================================================================
+     MODAL CREAR / EDITAR (unificado por modelo)
+======================================================================= -->
+<div id="crud-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div id="crud-modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('crud-modal')"></div>
+    <!-- Panel -->
+    <div class="relative bg-white dark:bg-darkCard rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-darkBorder overflow-hidden transform transition-all">
+        <!-- Header -->
+        <div id="crud-modal-header" class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-primary-600 to-primary-700">
+            <h3 id="crud-modal-title" class="text-lg font-bold text-white font-display">Crear elemento</h3>
+            <button onclick="closeModal('crud-modal')" class="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Body del formulario -->
+        <form id="crud-modal-form" class="p-6 space-y-4" onsubmit="handleModalSubmit(event)">
+            <!-- Error global -->
+            <div id="crud-error-global" class="hidden flex items-center gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-sm text-rose-700 dark:text-rose-400"></div>
+
+            <!-- Campo Nombre -->
+            <div class="space-y-1">
+                <label for="field-nombre" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Nombre <span class="text-rose-500">*</span></label>
+                <input type="text" id="field-nombre" name="nombre" autocomplete="off"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                    placeholder="Nombre del elemento">
+                <p id="error-nombre" class="hidden text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <span></span>
+                </p>
+            </div>
+
+            <!-- Campo Categoría (solo para Familia y Tema) -->
+            <div id="field-categoria-wrapper" class="space-y-1 hidden">
+                <label for="field-categoria" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Categoría <span class="text-rose-500">*</span></label>
+                <select id="field-categoria" name="categoria_id"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors">
+                    <option value="">— Selecciona una categoría —</option>
+                    {% for cat in categorias_list %}
+                    <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <p id="error-categoria_id" class="hidden text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <span></span>
+                </p>
+            </div>
+
+            <!-- Campo Familia (solo para Tema) -->
+            <div id="field-familia-wrapper" class="space-y-1 hidden">
+                <label for="field-familia" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Familia <span class="text-rose-500">*</span></label>
+                <select id="field-familia" name="familia_id"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors">
+                    <option value="">— Primero selecciona una categoría —</option>
+                </select>
+                <p id="error-familia_id" class="hidden text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    <span></span>
+                </p>
+            </div>
+
+            <!-- Campo Descripción -->
+            <div class="space-y-1">
+                <label for="field-descripcion" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Descripción <span class="text-slate-400 font-normal">(opcional)</span></label>
+                <textarea id="field-descripcion" name="descripcion" rows="2"
+                    class="w-full px-4 py-2.5 bg-slate-50 dark:bg-darkBg border border-slate-300 dark:border-darkBorder rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors resize-none"
+                    placeholder="Descripción breve (opcional)"></textarea>
+            </div>
+
+            <!-- Campo Slug -->
+            <div class="space-y-1">
+                <label for="field-slug" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Slug <span class="text-slate-400 font-normal">(se genera automáticamente)</span></label>
+                <div class="relative">
+                    <input type="text" id="field-slug" name="slug" autocomplete="off"
+                        class="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-darkBg border border-slate-200 dark:border-darkBorder rounded-xl text-sm text-slate-600 dark:text-slate-400 font-mono focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                        placeholder="se-genera-del-nombre">
+                    <div class="absolute inset-y-0 right-3 flex items-center">
+                        <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-darkBorder">
+                <button type="button" onclick="closeModal('crud-modal')"
+                    class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit" id="crud-submit-btn"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <svg id="crud-submit-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <svg id="crud-submit-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    <span id="crud-submit-label">Guardar</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- =======================================================================
+     MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
+======================================================================= -->
+<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('delete-modal')"></div>
+    <div class="relative bg-white dark:bg-darkCard rounded-2xl shadow-2xl w-full max-w-md border border-rose-200 dark:border-rose-900/50 overflow-hidden">
+        <!-- Header rojo -->
+        <div class="flex items-center gap-3 px-6 py-4 bg-rose-600">
+            <svg class="w-6 h-6 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <h3 class="text-lg font-bold text-white font-display">Confirmar eliminación</h3>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-sm text-slate-700 dark:text-slate-300">
+                ¿Estás seguro de que deseas eliminar <strong id="delete-modal-name" class="text-slate-900 dark:text-white"></strong>?
+            </p>
+            <!-- Advertencia de impacto en cascada -->
+            <div class="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl">
+                <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                <p id="delete-modal-warning" class="text-xs text-rose-700 dark:text-rose-400">
+                    Esta acción eliminará también todos los elementos dependientes en cascada y es irreversible.
+                </p>
+            </div>
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button onclick="closeModal('delete-modal')"
+                    class="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    Cancelar
+                </button>
+                <button id="delete-confirm-btn" onclick="executeDelete()"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <svg id="delete-confirm-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <svg id="delete-confirm-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =======================================================================
+     CONTENEDOR DE TOASTS
+======================================================================= -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- =======================================================================
+     JAVASCRIPT MODULAR
+======================================================================= -->
+<script>
+(function() {
+    'use strict';
+
+    // -----------------------------------------------------------------------
+    // Estado global del modal
+    // -----------------------------------------------------------------------
+    const state = {
+        modalType: null,      // 'categoria' | 'familia' | 'tema'
+        modalMode: null,      // 'create' | 'edit'
+        editId: null,
+        deleteType: null,
+        deleteId: null,
+    };
+
+    // URLs AJAX (generadas por Django al cargar la página)
+    const URLS = {
+        categoriaCreate: '{% url "gestion:ajax_categoria_crear" %}',
+        categoriaUpdate: (pk) => `/ajax/categoria/${pk}/editar/`,
+        categoriaDelete: (pk) => `/ajax/categoria/${pk}/eliminar/`,
+        familiaCreate: '{% url "gestion:ajax_familia_crear" %}',
+        familiaUpdate: (pk) => `/ajax/familia/${pk}/editar/`,
+        familiaDelete: (pk) => `/ajax/familia/${pk}/eliminar/`,
+        temaCreate: '{% url "gestion:ajax_tema_crear" %}',
+        temaUpdate: (pk) => `/ajax/tema/${pk}/editar/`,
+        temaDelete: (pk) => `/ajax/tema/${pk}/eliminar/`,
+        familiasPorCategoria: '{% url "gestion:ajax_familias_por_categoria" %}',
+    };
+
+    // -----------------------------------------------------------------------
+    // CSRF Helper
+    // -----------------------------------------------------------------------
+    function getCsrfToken() {
+        const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+        return cookie ? cookie.trim().split('=')[1] : '';
+    }
+
+    async function ajaxPost(url, data) {
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(data),
+        });
+        return { ok: resp.ok, status: resp.status, data: await resp.json() };
+    }
+
+    // -----------------------------------------------------------------------
+    // Slug generator en tiempo real
+    // -----------------------------------------------------------------------
+    function toSlug(str) {
+        return str.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim().replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    document.getElementById('field-nombre').addEventListener('input', function() {
+        const slugField = document.getElementById('field-slug');
+        if (!slugField.dataset.manualEdit) {
+            slugField.value = toSlug(this.value);
+        }
+    });
+
+    document.getElementById('field-slug').addEventListener('input', function() {
+        this.dataset.manualEdit = this.value ? 'true' : '';
+    });
+
+    // -----------------------------------------------------------------------
+    // Panel de taxonomía
+    // -----------------------------------------------------------------------
+    document.getElementById('btn-open-taxonomy-panel').addEventListener('click', () => {
+        const panel = document.getElementById('taxonomy-panel');
+        panel.classList.remove('hidden');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('btn-close-taxonomy-panel').addEventListener('click', () => {
+        document.getElementById('taxonomy-panel').classList.add('hidden');
+    });
+
+    // -----------------------------------------------------------------------
+    // Sistema de Tabs
+    // -----------------------------------------------------------------------
+    document.getElementById('taxonomy-tabs').addEventListener('click', (e) => {
+        const btn = e.target.closest('.taxonomy-tab-btn');
+        if (!btn) return;
+        const tab = btn.dataset.tab;
+
+        document.querySelectorAll('.taxonomy-tab-btn').forEach(b => {
+            b.classList.remove('active-tab', 'border-primary-600', 'text-primary-600', 'dark:text-primary-400', 'dark:border-primary-400');
+            b.classList.add('border-transparent', 'text-slate-500');
+        });
+        btn.classList.add('active-tab', 'border-primary-600', 'text-primary-600', 'dark:text-primary-400', 'dark:border-primary-400');
+        btn.classList.remove('border-transparent', 'text-slate-500');
+
+        document.querySelectorAll('.taxonomy-tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    });
+
+    // -----------------------------------------------------------------------
+    // Carga dinámica de Familias al cambiar Categoría (para modal Tema)
+    // -----------------------------------------------------------------------
+    document.getElementById('field-categoria').addEventListener('change', async function() {
+        const catId = this.value;
+        const familiaSelect = document.getElementById('field-familia');
+        familiaSelect.innerHTML = '<option value="">Cargando...</option>';
+        familiaSelect.disabled = true;
+
+        if (!catId) {
+            familiaSelect.innerHTML = '<option value="">— Primero selecciona una categoría —</option>';
+            familiaSelect.disabled = false;
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${URLS.familiasPorCategoria}?categoria_id=${catId}`);
+            const json = await resp.json();
+            familiaSelect.innerHTML = json.familias.length
+                ? '<option value="">— Selecciona una familia —</option>' +
+                  json.familias.map(f => `<option value="${f.id}">${f.nombre}</option>`).join('')
+                : '<option value="">No hay familias en esta categoría</option>';
+        } catch {
+            familiaSelect.innerHTML = '<option value="">Error al cargar familias</option>';
+        }
+        familiaSelect.disabled = false;
+    });
+
+    // -----------------------------------------------------------------------
+    // Modal Crear / Editar
+    // -----------------------------------------------------------------------
+    window.openCreateModal = function(type) {
+        state.modalType = type;
+        state.modalMode = 'create';
+        state.editId = null;
+
+        resetModalForm();
+        setModalTitle(type, 'create');
+        showHideFields(type);
+        openModal('crud-modal');
+    };
+
+    window.openEditModal = function(type, id, nombre, slug, descripcion, extra1Id, extra1Nombre, extra2Id, extra2Nombre) {
+        state.modalType = type;
+        state.modalMode = 'edit';
+        state.editId = id;
+
+        resetModalForm();
+        setModalTitle(type, 'edit');
+        showHideFields(type);
+
+        document.getElementById('field-nombre').value = nombre;
+        document.getElementById('field-slug').value = slug;
+        document.getElementById('field-descripcion').value = descripcion || '';
+
+        if (type === 'familia' && extra1Id) {
+            document.getElementById('field-categoria').value = extra1Id;
+        }
+
+        if (type === 'tema' && extra2Id) {
+            const catSelect = document.getElementById('field-categoria');
+            catSelect.value = extra2Id;
+            // Carga las familias y luego selecciona la correcta
+            loadFamiliasPorCategoria(extra2Id, extra1Id);
+        }
+
+        openModal('crud-modal');
+    };
+
+    async function loadFamiliasPorCategoria(catId, selectFamiliaId) {
+        const familiaSelect = document.getElementById('field-familia');
+        familiaSelect.innerHTML = '<option value="">Cargando...</option>';
+        familiaSelect.disabled = true;
+        try {
+            const resp = await fetch(`${URLS.familiasPorCategoria}?categoria_id=${catId}`);
+            const json = await resp.json();
+            familiaSelect.innerHTML = json.familias.length
+                ? '<option value="">— Selecciona una familia —</option>' +
+                  json.familias.map(f => `<option value="${f.id}" ${f.id == selectFamiliaId ? 'selected' : ''}>${f.nombre}</option>`).join('')
+                : '<option value="">No hay familias en esta categoría</option>';
+        } catch {
+            familiaSelect.innerHTML = '<option value="">Error al cargar familias</option>';
+        }
+        familiaSelect.disabled = false;
+    }
+
+    function setModalTitle(type, mode) {
+        const labels = { categoria: 'Categoría', familia: 'Familia', tema: 'Tema' };
+        const actions = { create: 'Nueva', edit: 'Editar' };
+        document.getElementById('crud-modal-title').textContent = `${actions[mode]} ${labels[type]}`;
+    }
+
+    function showHideFields(type) {
+        const catWrapper = document.getElementById('field-categoria-wrapper');
+        const famWrapper = document.getElementById('field-familia-wrapper');
+        catWrapper.classList.toggle('hidden', type === 'categoria');
+        famWrapper.classList.toggle('hidden', type !== 'tema');
+
+        // Reset select familia when not tema
+        if (type !== 'tema') {
+            const familiaSelect = document.getElementById('field-familia');
+            familiaSelect.innerHTML = '<option value="">— Primero selecciona una categoría —</option>';
+        }
+    }
+
+    function resetModalForm() {
+        document.getElementById('field-nombre').value = '';
+        document.getElementById('field-slug').value = '';
+        document.getElementById('field-slug').dataset.manualEdit = '';
+        document.getElementById('field-descripcion').value = '';
+        document.getElementById('field-categoria').value = '';
+        document.getElementById('crud-error-global').classList.add('hidden');
+        clearFieldErrors();
+        setSubmitLoading(false);
+    }
+
+    function clearFieldErrors() {
+        ['nombre', 'categoria_id', 'familia_id'].forEach(field => {
+            const el = document.getElementById(`error-${field}`);
+            if (el) {
+                el.classList.add('hidden');
+                el.querySelector('span').textContent = '';
+            }
+        });
+    }
+
+    function showFieldError(field, message) {
+        const el = document.getElementById(`error-${field}`);
+        if (el) {
+            el.classList.remove('hidden');
+            el.querySelector('span').textContent = message;
+        }
+    }
+
+    function setSubmitLoading(loading) {
+        const btn = document.getElementById('crud-submit-btn');
+        const icon = document.getElementById('crud-submit-icon');
+        const spinner = document.getElementById('crud-submit-spinner');
+        const label = document.getElementById('crud-submit-label');
+        btn.disabled = loading;
+        icon.classList.toggle('hidden', loading);
+        spinner.classList.toggle('hidden', !loading);
+        label.textContent = loading ? 'Guardando...' : 'Guardar';
+    }
+
+    window.handleModalSubmit = async function(event) {
+        event.preventDefault();
+        clearFieldErrors();
+        document.getElementById('crud-error-global').classList.add('hidden');
+        setSubmitLoading(true);
+
+        const { modalType, modalMode, editId } = state;
+        const nombre = document.getElementById('field-nombre').value.trim();
+        const descripcion = document.getElementById('field-descripcion').value.trim();
+        const slug = document.getElementById('field-slug').value.trim();
+        const categoriaId = document.getElementById('field-categoria').value;
+        const familiaId = document.getElementById('field-familia').value;
+
+        const payload = { nombre, descripcion, slug };
+        if (modalType === 'familia') payload.categoria_id = categoriaId;
+        if (modalType === 'tema') { payload.familia_id = familiaId; }
+
+        const urlMap = {
+            categoria: { create: URLS.categoriaCreate, edit: URLS.categoriaUpdate },
+            familia: { create: URLS.familiaCreate, edit: URLS.familiaUpdate },
+            tema: { create: URLS.temaCreate, edit: URLS.temaUpdate },
+        };
+
+        const url = modalMode === 'create'
+            ? urlMap[modalType].create
+            : urlMap[modalType].edit(editId);
+
+        try {
+            const result = await ajaxPost(url, payload);
+
+            if (result.ok && result.data.success) {
+                closeModal('crud-modal');
+                showToast(result.data.message, 'success');
+                updateListDOM(modalType, modalMode, result.data.item, editId);
+            } else {
+                const errors = result.data.errors || {};
+                if (errors.__all__) {
+                    const globalEl = document.getElementById('crud-error-global');
+                    globalEl.textContent = errors.__all__;
+                    globalEl.classList.remove('hidden');
+                }
+                Object.entries(errors).forEach(([field, msg]) => {
+                    if (field !== '__all__') showFieldError(field, msg);
+                });
+            }
+        } catch (err) {
+            const globalEl = document.getElementById('crud-error-global');
+            globalEl.textContent = 'Error de conexión. Inténtalo de nuevo.';
+            globalEl.classList.remove('hidden');
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
+
+    // -----------------------------------------------------------------------
+    // Modal de Eliminación
+    // -----------------------------------------------------------------------
+    window.openDeleteModal = function(type, id, nombre) {
+        state.deleteType = type;
+        state.deleteId = id;
+
+        const labels = { categoria: 'la categoría', familia: 'la familia', tema: 'el tema' };
+        const warnings = {
+            categoria: 'Esto eliminará también todas las familias, temas y apuntes que dependen de esta categoría.',
+            familia: 'Esto eliminará también todos los temas y apuntes que dependen de esta familia.',
+            tema: 'Esto eliminará también todos los apuntes que pertenecen a este tema.',
+        };
+
+        document.getElementById('delete-modal-name').textContent = `${labels[type]} "${nombre}"`;
+        document.getElementById('delete-modal-warning').textContent = warnings[type];
+        setDeleteLoading(false);
+        openModal('delete-modal');
+    };
+
+    window.executeDelete = async function() {
+        const { deleteType, deleteId } = state;
+        setDeleteLoading(true);
+
+        const urlMap = {
+            categoria: URLS.categoriaDelete,
+            familia: URLS.familiaDelete,
+            tema: URLS.temaDelete,
+        };
+
+        try {
+            const result = await ajaxPost(urlMap[deleteType](deleteId), {});
+            if (result.ok && result.data.success) {
+                closeModal('delete-modal');
+                showToast(result.data.message, 'warning');
+                removeRowFromList(deleteType, deleteId);
+            } else {
+                showToast('No se pudo eliminar el elemento.', 'error');
+            }
+        } catch {
+            showToast('Error de conexión.', 'error');
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
+    function setDeleteLoading(loading) {
+        const btn = document.getElementById('delete-confirm-btn');
+        const icon = document.getElementById('delete-confirm-icon');
+        const spinner = document.getElementById('delete-confirm-spinner');
+        btn.disabled = loading;
+        icon.classList.toggle('hidden', loading);
+        spinner.classList.toggle('hidden', !loading);
+    }
+
+    // -----------------------------------------------------------------------
+    // Apertura / Cierre de Modales
+    // -----------------------------------------------------------------------
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => {
+            const input = modal.querySelector('input[type="text"]');
+            if (input) input.focus();
+        }, 100);
+    }
+
+    window.closeModal = function(id) {
+        const modal = document.getElementById(id);
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+    };
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal('crud-modal');
+            closeModal('delete-modal');
+        }
+    });
+
+    // -----------------------------------------------------------------------
+    // Actualización del DOM tras operaciones CRUD
+    // -----------------------------------------------------------------------
+    function updateListDOM(type, mode, item, editId) {
+        const prefixMap = { categoria: 'cat', familia: 'fam', tema: 'tema' };
+        const prefix = prefixMap[type];
+
+        if (mode === 'edit') {
+            const row = document.getElementById(`${prefix}-row-${editId}`);
+            if (row) {
+                const nameEl = row.querySelector('p.font-semibold, .font-semibold.text-sm');
+                const slugEl = row.querySelector('p.font-mono, .font-mono');
+                if (nameEl) nameEl.textContent = item.nombre;
+                if (slugEl) slugEl.textContent = item.slug;
+            }
+        } else {
+            // Añadir nueva fila — recargar la sección para simplicidad
+            // Usamos un reload suave solo de la lista con un pequeño helper
+            const listEl = document.getElementById(`list-${type}s`);
+            if (listEl) {
+                // Remover mensaje de vacío si existe
+                const empty = document.getElementById(`empty-${type}s`);
+                if (empty) empty.remove();
+
+                const newRow = buildRow(type, item);
+                listEl.insertAdjacentHTML('afterbegin', newRow);
+            }
+        }
+    }
+
+    function buildRow(type, item) {
+        if (type === 'categoria') {
+            return `<div id="cat-row-${item.id}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-primary-300 dark:hover:border-primary-700 transition-all group">
+                <div class="min-w-0">
+                    <p class="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">${item.nombre}</p>
+                    <p class="text-xs text-slate-400 font-mono">${item.slug}</p>
+                    ${item.descripcion ? `<p class="text-xs text-slate-500 mt-0.5 truncate max-w-xs">${item.descripcion}</p>` : ''}
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="openEditModal('categoria', ${item.id}, '${esc(item.nombre)}', '${esc(item.slug)}', '${esc(item.descripcion || '')}')"
+                        class="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button onclick="openDeleteModal('categoria', ${item.id}, '${esc(item.nombre)}')"
+                        class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        } else if (type === 'familia') {
+            return `<div id="fam-row-${item.id}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-secondary-300 dark:hover:border-secondary-700 transition-all group">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">${esc(item.categoria_nombre)}</span>
+                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <span class="font-semibold text-sm text-slate-900 dark:text-slate-100">${esc(item.nombre)}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-mono">${item.slug}</p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="openEditModal('familia', ${item.id}, '${esc(item.nombre)}', '${esc(item.slug)}', '${esc(item.descripcion || '')}', ${item.categoria_id}, '${esc(item.categoria_nombre)}')"
+                        class="p-1.5 text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-400 hover:bg-secondary-50 dark:hover:bg-secondary-950/30 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button onclick="openDeleteModal('familia', ${item.id}, '${esc(item.nombre)}')"
+                        class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        } else {
+            return `<div id="tema-row-${item.id}" class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder rounded-xl hover:border-amber-300 dark:hover:border-amber-700 transition-all group">
+                <div class="min-w-0">
+                    <div class="flex items-center flex-wrap gap-1.5 mb-0.5">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">${esc(item.categoria_nombre)}</span>
+                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <span class="text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">${esc(item.familia_nombre)}</span>
+                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <span class="font-semibold text-sm text-slate-900 dark:text-slate-100">${esc(item.nombre)}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-mono">${item.slug}</p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="openEditModal('tema', ${item.id}, '${esc(item.nombre)}', '${esc(item.slug)}', '${esc(item.descripcion || '')}', ${item.familia_id}, '${esc(item.familia_nombre)}', 0, '')"
+                        class="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button onclick="openDeleteModal('tema', ${item.id}, '${esc(item.nombre)}')"
+                        class="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors" title="Eliminar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        }
+    }
+
+    function removeRowFromList(type, id) {
+        const prefixMap = { categoria: 'cat', familia: 'fam', tema: 'tema' };
+        const row = document.getElementById(`${prefixMap[type]}-row-${id}`);
+        if (row) {
+            row.style.transition = 'all 0.3s ease-out';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            setTimeout(() => row.remove(), 300);
+        }
+    }
+
+    function esc(str) {
+        return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    // -----------------------------------------------------------------------
+    // Sistema de Toast Notifications
+    // -----------------------------------------------------------------------
+    window.showToast = function(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const id = `toast-${Date.now()}`;
+        const configs = {
+            success: { bg: 'bg-emerald-600', icon: '✓', label: 'Éxito' },
+            warning: { bg: 'bg-amber-500', icon: '⚠', label: 'Aviso' },
+            error: { bg: 'bg-rose-600', icon: '✕', label: 'Error' },
+            info: { bg: 'bg-primary-600', icon: 'ℹ', label: 'Info' },
+        };
+        const cfg = configs[type] || configs.info;
+
+        const toast = document.createElement('div');
+        toast.id = id;
+        toast.className = `pointer-events-auto flex items-start gap-3 ${cfg.bg} text-white px-4 py-3 rounded-xl shadow-2xl max-w-sm w-full transform translate-x-full transition-transform duration-300 ease-out`;
+        toast.innerHTML = `
+            <span class="text-lg leading-none mt-0.5 flex-shrink-0">${cfg.icon}</span>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider opacity-80">${cfg.label}</p>
+                <p class="text-sm font-medium mt-0.5 leading-snug">${message}</p>
+            </div>
+            <button onclick="document.getElementById('${id}').remove()" class="ml-1 text-white/70 hover:text-white flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>`;
+
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateX(0)';
+        });
+
+        // Auto-dismiss tras 4 segundos
+        setTimeout(() => {
+            toast.style.transform = 'translateX(calc(100% + 20px))';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 350);
+        }, 4000);
+    };
+
+    // -----------------------------------------------------------------------
+    // Filtro en tiempo real del Explorador de Temas
+    // -----------------------------------------------------------------------
+    const themeSearchInput = document.getElementById('theme-search-input');
+    if (themeSearchInput) {
+        themeSearchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.theme-card').forEach(card => {
+                const name = card.getAttribute('data-theme-name') || '';
+                card.classList.toggle('hidden', val.length > 0 && !name.includes(val));
+            });
+        });
+    }
+
+})();
+</script>
+
 {% endblock %}
