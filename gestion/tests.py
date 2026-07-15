@@ -148,3 +148,84 @@ class ViewTests(TestCase):
         # Recargar desde la BD y comprobar el estado
         self.apunte.refresh_from_db()
         self.assertEqual(self.apunte.estado, "COMPLETADO")
+
+    def test_apunte_create_view_get(self) -> None:
+        """Verifica que la página de creación de apuntes cargue correctamente."""
+        url = reverse("gestion:apunte_crear")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.context)
+        self.assertTrue(response.context["is_create"])
+
+        # Probar pre-selección de tema por parámetro GET
+        response_with_tema = self.client.get(url, {"tema": self.tema.id})
+        self.assertEqual(response_with_tema.status_code, 200)
+        form = response_with_tema.context["form"]
+        self.assertEqual(form.initial.get("tema"), self.tema)
+
+    def test_apunte_create_view_post(self) -> None:
+        """Verifica que la creación de un apunte persista los datos en DB."""
+        url = reverse("gestion:apunte_crear")
+        payload = {
+            "tema": self.tema.id,
+            "titulo": "Nuevo Apunte de Test",
+            "formato": "MD",
+            "estado": "EN_PROGRESO",
+            "contenido": "Este es el contenido del nuevo apunte con **negrita**."
+        }
+        response = self.client.post(url, payload)
+        # Redirige al detalle del nuevo apunte
+        self.assertEqual(response.status_code, 302)
+        
+        # Verificar en base de datos
+        nuevo_apunte = Apunte.objects.get(titulo="Nuevo Apunte de Test")
+        self.assertEqual(nuevo_apunte.tema, self.tema)
+        self.assertEqual(nuevo_apunte.formato, "MD")
+        self.assertEqual(nuevo_apunte.estado, "EN_PROGRESO")
+        self.assertEqual(nuevo_apunte.contenido, payload["contenido"])
+        self.assertEqual(nuevo_apunte.slug, slugify("Nuevo Apunte de Test"))
+
+    def test_apunte_update_view_get(self) -> None:
+        """Verifica que la página de edición cargue el apunte actual."""
+        url = reverse("gestion:apunte_editar", kwargs={"slug": self.apunte.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["apunte"], self.apunte)
+        self.assertFalse(response.context["is_create"])
+
+    def test_apunte_update_view_post(self) -> None:
+        """Verifica que la actualización de un apunte guarde los cambios en DB."""
+        url = reverse("gestion:apunte_editar", kwargs={"slug": self.apunte.slug})
+        payload = {
+            "tema": self.tema.id,
+            "titulo": "Título Modificado",
+            "formato": "RST",
+            "estado": "COMPLETADO",
+            "contenido": "Contenido modificado."
+        }
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, 302)
+        
+        # Comprobar actualización en DB
+        self.apunte.refresh_from_db()
+        self.assertEqual(self.apunte.titulo, "Título Modificado")
+        self.assertEqual(self.apunte.formato, "RST")
+        self.assertEqual(self.apunte.estado, "COMPLETADO")
+        self.assertEqual(self.apunte.contenido, "Contenido modificado.")
+
+    def test_apunte_preview_view(self) -> None:
+        """Verifica que la vista de previsualización AJAX compile Markdown y RST."""
+        url = reverse("gestion:ajax_apunte_preview")
+        
+        # Test Markdown preview
+        response_md = self.client.post(url, {"contenido": "Texto **negrita**", "formato": "MD"})
+        self.assertEqual(response_md.status_code, 200)
+        self.assertIn("<strong>negrita</strong>", response_md.content.decode())
+
+        # Test RST preview
+        response_rst = self.client.post(url, {
+            "contenido": "Encabezado\n==========\n\nCuerpo",
+            "formato": "RST"
+        })
+        self.assertEqual(response_rst.status_code, 200)
+        self.assertIn("<h1 class=\"title\"", response_rst.content.decode())

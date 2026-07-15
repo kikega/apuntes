@@ -1,0 +1,503 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}{{ action }} Apunte | NotesDev{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-in">
+    <!-- BREADCRUMBS (JERARQUÍA) -->
+    <nav class="flex px-4 py-2 text-slate-500 bg-white dark:bg-darkCard dark:text-darkTextMuted border border-slate-200 dark:border-darkBorder rounded-lg text-xs md:text-sm shadow-sm" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'gestion:dashboard' %}" class="inline-flex items-center hover:text-primary-600 dark:hover:text-amber-400 transition-colors font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+            </li>
+            {% if not is_create %}
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.categoria.nombre }}</span>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.nombre }}</span>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">{{ apunte.tema.nombre }}</span>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">Editar Apunte</span>
+                </div>
+            </li>
+            {% else %}
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">Nuevo Apunte</span>
+                </div>
+            </li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- FORMULARIO PRINCIPAL -->
+    <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- COLUMNA PRINCIPAL (EDITOR) -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- TÍTULO -->
+                <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm">
+                    <label for="{{ form.titulo.id_for_label }}" class="block text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide mb-2">
+                        Título del Apunte
+                    </label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                        <p class="text-rose-500 text-xs mt-1">{{ form.titulo.errors.as_text }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- EDITOR Y PESTAÑAS -->
+                <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm flex flex-col">
+                    <!-- Cabecera de Pestañas -->
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-darkBorder pb-3 mb-4">
+                        <div class="flex space-x-1" id="editor-tabs">
+                            <button type="button" id="tab-btn-editor" onclick="switchEditorTab('editor')"
+                                class="px-4 py-2 text-sm font-semibold border-b-2 border-primary-600 text-primary-600 dark:text-amber-500 dark:border-amber-500 transition-all duration-200">
+                                📝 Editor
+                            </button>
+                            <button type="button" id="tab-btn-preview" onclick="switchEditorTab('preview')"
+                                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-darkTextMuted dark:hover:text-slate-200 transition-all duration-200">
+                                👁️ Vista Previa
+                            </button>
+                        </div>
+                        <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">Soporta Markdown y RST</span>
+                    </div>
+
+                    <!-- Contenedor del Editor -->
+                    <div id="editor-container" class="space-y-4">
+                        <!-- Barra de herramientas (Toolbar) -->
+                        <div class="flex flex-wrap gap-1 p-2 bg-slate-50 dark:bg-darkBg border border-slate-200 dark:border-darkBorder rounded-lg items-center">
+                            <!-- Negrita -->
+                            <button type="button" onclick="insertMarkup('bold')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Negrita">
+                                <span class="font-bold font-mono text-sm px-1">B</span>
+                            </button>
+                            <!-- Cursiva -->
+                            <button type="button" onclick="insertMarkup('italic')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Cursiva">
+                                <span class="italic font-mono text-sm px-1">I</span>
+                            </button>
+                            <div class="h-4 w-px bg-slate-300 dark:bg-darkBorder mx-1"></div>
+                            <!-- H1 -->
+                            <button type="button" onclick="insertMarkup('h1')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Título 1">
+                                <span class="font-bold text-xs">H1</span>
+                            </button>
+                            <!-- H2 -->
+                            <button type="button" onclick="insertMarkup('h2')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Título 2">
+                                <span class="font-bold text-xs">H2</span>
+                            </button>
+                            <div class="h-4 w-px bg-slate-300 dark:bg-darkBorder mx-1"></div>
+                            <!-- Código en línea -->
+                            <button type="button" onclick="insertMarkup('code_inline')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Código en línea">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </button>
+                            <!-- Bloque de código -->
+                            <button type="button" onclick="insertMarkup('code_block')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Bloque de código">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                            </button>
+                            <div class="h-4 w-px bg-slate-300 dark:bg-darkBorder mx-1"></div>
+                            <!-- Enlace -->
+                            <button type="button" onclick="insertMarkup('link')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Enlace">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            </button>
+                            <!-- Lista no ordenada -->
+                            <button type="button" onclick="insertMarkup('ul')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Lista no ordenada">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                            </button>
+                            <!-- Lista ordenada -->
+                            <button type="button" onclick="insertMarkup('ol')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Lista ordenada">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                            </button>
+                            <!-- Tabla -->
+                            <button type="button" onclick="insertMarkup('table')"
+                                class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Insertar tabla">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </button>
+                            <div class="flex-grow"></div>
+                            <!-- Botón de Ayuda (Guía Rápida) -->
+                            <button type="button" onclick="toggleHelpPanel()"
+                                class="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-200/50 dark:hover:bg-darkBorder rounded transition-all duration-200" title="Ayuda de Sintaxis">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Panel Colapsable de Guía Rápida de Sintaxis -->
+                        <div id="help-panel" class="hidden p-4 bg-slate-50 dark:bg-darkBg border border-slate-200 dark:border-darkBorder rounded-lg text-xs grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in font-sans">
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-amber-500 mb-2 border-b border-slate-200 dark:border-darkBorder pb-1">Sintaxis Markdown (MD)</h4>
+                                <ul class="space-y-1 text-slate-600 dark:text-slate-400">
+                                    <li><strong>Negrita</strong>: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">**texto**</code></li>
+                                    <li><em>Cursiva</em>: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">*texto*</code></li>
+                                    <li>Código en línea: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">`código`</code></li>
+                                    <li>Bloque de código: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">```python ... ```</code></li>
+                                    <li>Enlaces: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">[texto](url)</code></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-amber-500 mb-2 border-b border-slate-200 dark:border-darkBorder pb-1">Sintaxis ReStructuredText (RST)</h4>
+                                <ul class="space-y-1 text-slate-600 dark:text-slate-400">
+                                    <li><strong>Negrita</strong>: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">**texto**</code></li>
+                                    <li><em>Cursiva</em>: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">*texto*</code></li>
+                                    <li>Código en línea: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">``código``</code></li>
+                                    <li>Bloque de código: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">.. code-block:: python</code></li>
+                                    <li>Enlaces: <code class="bg-white dark:bg-darkCard px-1 rounded font-mono">`texto <url>`_</code></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Textarea del formulario -->
+                        {{ form.contenido }}
+                        {% if form.contenido.errors %}
+                            <p class="text-rose-500 text-xs mt-1">{{ form.contenido.errors.as_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Contenedor de Vista Previa -->
+                    <div id="preview-container" class="hidden min-h-[350px] max-h-[600px] overflow-y-auto bg-slate-50 dark:bg-darkBg border border-slate-200 dark:border-darkBorder rounded-lg p-6 prose max-w-none dark:prose-invert">
+                        <!-- La vista previa se renderiza dinámicamente mediante JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMNA LATERAL (CONFIGURACIÓN Y METADATOS) -->
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm space-y-5">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-amber-500 font-display border-b border-slate-100 dark:border-darkBorder/40 pb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                        Metadatos del Apunte
+                    </h3>
+
+                    <!-- Tema -->
+                    <div>
+                        <label for="{{ form.tema.id_for_label }}" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Tema Asociado
+                        </label>
+                        {{ form.tema }}
+                        {% if form.tema.errors %}
+                            <p class="text-rose-500 text-xs mt-1">{{ form.tema.errors.as_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Formato de Texto -->
+                    <div>
+                        <label for="{{ form.formato.id_for_label }}" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Formato del Contenido
+                        </label>
+                        {{ form.formato }}
+                        {% if form.formato.errors %}
+                            <p class="text-rose-500 text-xs mt-1">{{ form.formato.errors.as_text }}</p>
+                        {% endif %}
+                        <p class="text-[11px] text-slate-400 mt-1">
+                            El editor cambiará la sintaxis de los botones automáticamente.
+                        </p>
+                    </div>
+
+                    <!-- Estado de Estudio -->
+                    <div>
+                        <label for="{{ form.estado.id_for_label }}" class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">
+                            Estado de Estudio
+                        </label>
+                        {{ form.estado }}
+                        {% if form.estado.errors %}
+                            <p class="text-rose-500 text-xs mt-1">{{ form.estado.errors.as_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="pt-4 border-t border-slate-100 dark:border-darkBorder/40 flex flex-col gap-2">
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            {{ action }} Apunte
+                        </button>
+                        {% if is_create %}
+                        <a href="{% url 'gestion:dashboard' %}"
+                            class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-darkBg dark:hover:bg-darkBorder text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-all duration-200">
+                            Cancelar
+                        </a>
+                        {% else %}
+                        <a href="{% url 'gestion:apunte_detail' apunte.slug %}"
+                            class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-darkBg dark:hover:bg-darkBorder text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-all duration-200">
+                            Cancelar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- LÓGICA JAVASCRIPT DEL EDITOR -->
+<script>
+    // Toggle de la guía rápida de sintaxis
+    function toggleHelpPanel() {
+        const helpPanel = document.getElementById('help-panel');
+        helpPanel.classList.toggle('hidden');
+    }
+
+    // Insertar marcado en el textarea
+    function insertMarkup(type) {
+        const textarea = document.getElementById('id_contenido');
+        const formato = document.getElementById('id_formato').value; // 'MD' o 'RST'
+        
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selectedText = text.substring(start, end);
+        
+        let before = '';
+        let after = '';
+        let placeholder = '';
+        
+        if (formato === 'MD') {
+            switch (type) {
+                case 'bold':
+                    before = '**';
+                    after = '**';
+                    placeholder = 'texto en negrita';
+                    break;
+                case 'italic':
+                    before = '*';
+                    after = '*';
+                    placeholder = 'texto en cursiva';
+                    break;
+                case 'h1':
+                    before = '# ';
+                    after = '\n';
+                    placeholder = 'Título 1';
+                    break;
+                case 'h2':
+                    before = '## ';
+                    after = '\n';
+                    placeholder = 'Título 2';
+                    break;
+                case 'code_inline':
+                    before = '`';
+                    after = '`';
+                    placeholder = 'código';
+                    break;
+                case 'code_block':
+                    before = '```python\n';
+                    after = '\n```';
+                    placeholder = '# escribe tu código aquí';
+                    break;
+                case 'link':
+                    before = '[';
+                    after = '](url)';
+                    placeholder = 'texto del enlace';
+                    break;
+                case 'ul':
+                    before = '- ';
+                    after = '';
+                    placeholder = 'Elemento de lista';
+                    break;
+                case 'ol':
+                    before = '1. ';
+                    after = '';
+                    placeholder = 'Elemento de lista';
+                    break;
+                case 'table':
+                    before = '\n| Cabecera 1 | Cabecera 2 |\n| --- | --- |\n| Celda 1 | Celda 2 |\n';
+                    after = '';
+                    placeholder = '';
+                    break;
+            }
+        } else {
+            // RST
+            switch (type) {
+                case 'bold':
+                    before = '**';
+                    after = '**';
+                    placeholder = 'texto en negrita';
+                    break;
+                case 'italic':
+                    before = '*';
+                    after = '*';
+                    placeholder = 'texto en cursiva';
+                    break;
+                case 'h1':
+                    const headingText1 = selectedText || 'Título 1';
+                    const underline1 = '='.repeat(Math.max(headingText1.length, 4));
+                    before = '';
+                    after = '\n' + underline1 + '\n';
+                    placeholder = 'Título 1';
+                    break;
+                case 'h2':
+                    const headingText2 = selectedText || 'Título 2';
+                    const underline2 = '-'.repeat(Math.max(headingText2.length, 4));
+                    before = '';
+                    after = '\n' + underline2 + '\n';
+                    placeholder = 'Título 2';
+                    break;
+                case 'code_inline':
+                    before = '``';
+                    after = '``';
+                    placeholder = 'código';
+                    break;
+                case 'code_block':
+                    before = '.. code-block:: python\n\n    ';
+                    after = '';
+                    placeholder = '# escribe tu código aquí';
+                    break;
+                case 'link':
+                    before = '`';
+                    after = ' <url>`_';
+                    placeholder = 'texto del enlace';
+                    break;
+                case 'ul':
+                    before = '* ';
+                    after = '';
+                    placeholder = 'Elemento de lista';
+                    break;
+                case 'ol':
+                    before = '#. ';
+                    after = '';
+                    placeholder = 'Elemento de lista';
+                    break;
+                case 'table':
+                    before = '\n+------------+------------+\n| Cabecera 1 | Cabecera 2 |\n+============+============+\n| Celda 1    | Celda 2    |\n+------------+------------+\n';
+                    after = '';
+                    placeholder = '';
+                    break;
+            }
+        }
+        
+        const insertText = selectedText || placeholder;
+        let replacement = '';
+        
+        if (formato === 'RST' && (type === 'h1' || type === 'h2')) {
+            const char = type === 'h1' ? '=' : '-';
+            const finalHeading = selectedText || placeholder;
+            replacement = finalHeading + '\n' + char.repeat(Math.max(finalHeading.length, 4)) + '\n';
+        } else {
+            replacement = before + insertText + after;
+        }
+        
+        textarea.value = text.substring(0, start) + replacement + text.substring(end);
+        
+        // Foco de vuelta en textarea
+        textarea.focus();
+        const newCursorStart = start + before.length;
+        const newCursorEnd = newCursorStart + insertText.length;
+        textarea.setSelectionRange(newCursorStart, newCursorEnd);
+    }
+
+    // Control de pestañas del editor
+    function switchEditorTab(tab) {
+        const btnEditor = document.getElementById('tab-btn-editor');
+        const btnPreview = document.getElementById('tab-btn-preview');
+        const containerEditor = document.getElementById('editor-container');
+        const containerPreview = document.getElementById('preview-container');
+        
+        if (tab === 'editor') {
+            btnEditor.classList.add('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
+            btnEditor.classList.remove('text-slate-500', 'dark:text-slate-400', 'border-transparent');
+            
+            btnPreview.classList.remove('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
+            btnPreview.classList.add('text-slate-500', 'dark:text-slate-400', 'border-transparent');
+            
+            containerEditor.classList.remove('hidden');
+            containerPreview.classList.add('hidden');
+        } else {
+            btnPreview.classList.add('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
+            btnPreview.classList.remove('text-slate-500', 'dark:text-slate-400', 'border-transparent');
+            
+            btnEditor.classList.remove('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
+            btnEditor.classList.add('text-slate-500', 'dark:text-slate-400', 'border-transparent');
+            
+            containerEditor.classList.add('hidden');
+            containerPreview.classList.remove('hidden');
+            
+            loadPreview();
+        }
+    }
+
+    // Llamada AJAX para renderizar vista previa
+    function loadPreview() {
+        const previewContainer = document.getElementById('preview-container');
+        previewContainer.innerHTML = `
+            <div class="flex items-center justify-center py-16">
+                <svg class="animate-spin h-8 w-8 text-primary-600 dark:text-amber-500" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        `;
+        
+        const contenido = document.getElementById('id_contenido').value;
+        const formato = document.getElementById('id_formato').value;
+        const apunteId = "{% if apunte %}{{ apunte.id }}{% endif %}";
+        
+        const formData = new FormData();
+        formData.append('contenido', contenido);
+        formData.append('formato', formato);
+        if (apunteId) {
+            formData.append('apunte_id', apunteId);
+        }
+        
+        fetch("{% url 'gestion:ajax_apunte_preview' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('La respuesta del servidor no fue satisfactoria.');
+            }
+            return response.text();
+        })
+        .then(html => {
+            previewContainer.innerHTML = html;
+        })
+        .catch(error => {
+            previewContainer.innerHTML = `
+                <div class="text-rose-500 font-semibold p-4 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-lg">
+                    Error al cargar la vista previa: ${error.message}
+                </div>
+            `;
+        });
+    }
+</script>
+{% endblock %}

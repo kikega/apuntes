@@ -7,6 +7,8 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.text import slugify
 from typing import Any, Dict
 from .models import Categoria, Familia, Tema, Apunte, ImagenApunte
+from .forms import ApunteForm
+from .templatetags.custom_filters import render_content
 
 logger = logging.getLogger(__name__)
 
@@ -517,3 +519,102 @@ class TemaDeleteView(View):
             "message": f"Tema '{nombre}' eliminado. Se eliminaron también {total_apuntes} apunte(s).",
             "deleted_id": pk
         })
+
+
+# ---------------------------------------------------------------------------
+# CRUD de Apuntes (Crear, Editar, Vista Previa)
+# ---------------------------------------------------------------------------
+
+class ApunteCreateView(View):
+    """
+    Vista para crear un nuevo Apunte.
+    Permite pre-seleccionar el tema pasando `tema` como parámetro GET.
+    """
+    def get(self, request: HttpRequest) -> HttpResponse:
+        tema_id = request.GET.get("tema")
+        initial_data = {}
+        if tema_id:
+            try:
+                tema = Tema.objects.get(pk=tema_id)
+                initial_data["tema"] = tema
+            except Tema.DoesNotExist:
+                pass
+
+        form = ApunteForm(initial=initial_data)
+        context = {
+            "form": form,
+            "action": "Crear",
+            "is_create": True,
+        }
+        return render(request, "gestion/apunte_form.html", context)
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        form = ApunteForm(request.POST)
+        if form.is_valid():
+            apunte = form.save()
+            logger.info(f"Apunte creado: '{apunte.titulo}' (id={apunte.id})")
+            return redirect("gestion:apunte_detail", slug=apunte.slug)
+
+        context = {
+            "form": form,
+            "action": "Crear",
+            "is_create": True,
+        }
+        return render(request, "gestion/apunte_form.html", context)
+
+
+class ApunteUpdateView(View):
+    """
+    Vista para editar un Apunte existente.
+    Carga el apunte por su slug y actualiza sus campos.
+    """
+    def get(self, request: HttpRequest, slug: str) -> HttpResponse:
+        apunte = get_object_or_404(Apunte, slug=slug)
+        form = ApunteForm(instance=apunte)
+        context = {
+            "form": form,
+            "action": "Editar",
+            "is_create": False,
+            "apunte": apunte,
+        }
+        return render(request, "gestion/apunte_form.html", context)
+
+    def post(self, request: HttpRequest, slug: str) -> HttpResponse:
+        apunte = get_object_or_404(Apunte, slug=slug)
+        form = ApunteForm(request.POST, instance=apunte)
+        if form.is_valid():
+            apunte = form.save()
+            logger.info(f"Apunte actualizado: '{apunte.titulo}' (id={apunte.id})")
+            return redirect("gestion:apunte_detail", slug=apunte.slug)
+
+        context = {
+            "form": form,
+            "action": "Editar",
+            "is_create": False,
+            "apunte": apunte,
+        }
+        return render(request, "gestion/apunte_form.html", context)
+
+
+class ApuntePreviewView(View):
+    """
+    Vista AJAX para compilar contenido Markdown o RST en tiempo real.
+    No persiste cambios en base de datos.
+    """
+    def post(self, request: HttpRequest) -> HttpResponse:
+        contenido = request.POST.get("contenido", "")
+        formato = request.POST.get("formato", "MD")
+        apunte_id = request.POST.get("apunte_id")
+
+        if apunte_id:
+            try:
+                apunte = Apunte.objects.get(pk=apunte_id)
+                apunte.contenido = contenido
+                apunte.formato = formato
+            except Apunte.DoesNotExist:
+                apunte = Apunte(contenido=contenido, formato=formato)
+        else:
+            apunte = Apunte(contenido=contenido, formato=formato)
+
+        html = render_content(apunte)
+        return HttpResponse(html)

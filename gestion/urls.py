@@ -2,6 +2,9 @@ from django.urls import path
 from .views import (
     DashboardView,
     ApunteDetailView,
+    ApunteCreateView,
+    ApunteUpdateView,
+    ApuntePreviewView,
     # AJAX Auxiliar
     FamiliasPorCategoriaView,
     # AJAX Categoría
@@ -23,10 +26,13 @@ app_name = "gestion"
 urlpatterns = [
     # Vistas principales
     path("", DashboardView.as_view(), name="dashboard"),
+    path("apunte/crear/", ApunteCreateView.as_view(), name="apunte_crear"),
     path("apunte/<slug:slug>/", ApunteDetailView.as_view(), name="apunte_detail"),
+    path("apunte/<slug:slug>/editar/", ApunteUpdateView.as_view(), name="apunte_editar"),
 
     # AJAX Auxiliar
     path("ajax/familias/", FamiliasPorCategoriaView.as_view(), name="ajax_familias_por_categoria"),
+    path("ajax/apunte/preview/", ApuntePreviewView.as_view(), name="ajax_apunte_preview"),
 
     # AJAX CRUD Categoría
     path("ajax/categoria/crear/", CategoriaCreateView.as_view(), name="ajax_categoria_crear"),
