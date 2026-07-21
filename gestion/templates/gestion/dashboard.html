@@ -333,15 +333,16 @@
                 <div class="space-y-2">
                     {% for apunte in tema.apuntes.all %}
                     <a href="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex flex-col p-2 rounded bg-white dark:bg-darkCard hover:bg-primary-50 dark:hover:bg-darkBg/60 border border-slate-100 dark:border-darkBorder/40 transition-colors group">
-                        <span class="text-xs font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600 dark:group-hover:text-amber-400 truncate pr-2">{{ apunte.titulo }}</span>
-                        <span class="text-[9px] text-slate-400 dark:text-slate-500 truncate mt-0.5">{{ apunte.contenido|truncatewords:8 }}</span>
-                        {% if apunte.estado == 'NO_EMPEZADO' %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex-shrink-0">No empezado</span>
-                        {% elif apunte.estado == 'EN_PROGRESO' %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/50 flex-shrink-0">En progreso</span>
-                        {% else %}
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 flex-shrink-0">Completado</span>
-                        {% endif %}
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600 dark:group-hover:text-amber-400 truncate">{{ apunte.titulo }}</span>
+                            {% if apunte.estado == 'NO_EMPEZADO' %}
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 flex-shrink-0">No empezado</span>
+                            {% elif apunte.estado == 'EN_PROGRESO' %}
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/50 flex-shrink-0">En progreso</span>
+                            {% else %}
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50 flex-shrink-0">Completado</span>
+                            {% endif %}
+                        </div>
                     </a>
                     {% empty %}
                     <p class="text-xs text-slate-400 dark:text-slate-500 italic py-1">Sin apuntes creados</p>
