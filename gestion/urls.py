@@ -5,47 +5,50 @@ from .views import (
     ApunteCreateView,
     ApunteUpdateView,
     ApuntePreviewView,
-    # AJAX Auxiliar
+    ApunteExportView,
+    ApunteFavoritoToggleView,
     FamiliasPorCategoriaView,
-    # AJAX Categoría
     CategoriaCreateView,
     CategoriaUpdateView,
     CategoriaDeleteView,
-    # AJAX Familia
     FamiliaCreateView,
     FamiliaUpdateView,
     FamiliaDeleteView,
-    # AJAX Tema
     TemaCreateView,
     TemaUpdateView,
     TemaDeleteView,
+    TagCreateView,
+    TagDeleteView,
+    ApiApunteListView,
+    ApiApunteDetailView,
+    TagSearchView,
+    ImagenApunteUploadView,
 )
 
 app_name = "gestion"
 
 urlpatterns = [
-    # Vistas principales
     path("", DashboardView.as_view(), name="dashboard"),
     path("apunte/crear/", ApunteCreateView.as_view(), name="apunte_crear"),
     path("apunte/<slug:slug>/", ApunteDetailView.as_view(), name="apunte_detail"),
     path("apunte/<slug:slug>/editar/", ApunteUpdateView.as_view(), name="apunte_editar"),
-
-    # AJAX Auxiliar
+    path("apunte/<slug:slug>/exportar/<str:fmt>/", ApunteExportView.as_view(), name="apunte_exportar"),
     path("ajax/familias/", FamiliasPorCategoriaView.as_view(), name="ajax_familias_por_categoria"),
     path("ajax/apunte/preview/", ApuntePreviewView.as_view(), name="ajax_apunte_preview"),
-
-    # AJAX CRUD Categoría
+    path("ajax/apunte/<int:pk>/favorito/", ApunteFavoritoToggleView.as_view(), name="ajax_apunte_favorito"),
+    path("ajax/imagen/subir/", ImagenApunteUploadView.as_view(), name="ajax_imagen_subir"),
     path("ajax/categoria/crear/", CategoriaCreateView.as_view(), name="ajax_categoria_crear"),
     path("ajax/categoria/<int:pk>/editar/", CategoriaUpdateView.as_view(), name="ajax_categoria_editar"),
     path("ajax/categoria/<int:pk>/eliminar/", CategoriaDeleteView.as_view(), name="ajax_categoria_eliminar"),
-
-    # AJAX CRUD Familia
     path("ajax/familia/crear/", FamiliaCreateView.as_view(), name="ajax_familia_crear"),
     path("ajax/familia/<int:pk>/editar/", FamiliaUpdateView.as_view(), name="ajax_familia_editar"),
     path("ajax/familia/<int:pk>/eliminar/", FamiliaDeleteView.as_view(), name="ajax_familia_eliminar"),
-
-    # AJAX CRUD Tema
     path("ajax/tema/crear/", TemaCreateView.as_view(), name="ajax_tema_crear"),
     path("ajax/tema/<int:pk>/editar/", TemaUpdateView.as_view(), name="ajax_tema_editar"),
     path("ajax/tema/<int:pk>/eliminar/", TemaDeleteView.as_view(), name="ajax_tema_eliminar"),
+    path("ajax/tag/crear/", TagCreateView.as_view(), name="ajax_tag_crear"),
+    path("ajax/tag/<int:pk>/eliminar/", TagDeleteView.as_view(), name="ajax_tag_eliminar"),
+    path("ajax/tags/buscar/", TagSearchView.as_view(), name="ajax_tags_buscar"),
+    path("api/apuntes/", ApiApunteListView.as_view(), name="api_apunte_list"),
+    path("api/apuntes/<slug:slug>/", ApiApunteDetailView.as_view(), name="api_apunte_detail"),
 ]

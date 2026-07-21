@@ -5,45 +5,20 @@
 
 {% block content %}
 <div class="space-y-6 animate-fade-in">
-    <!-- BREADCRUMBS (JERARQUÍA) -->
     <nav class="flex px-4 py-2 text-slate-500 bg-white dark:bg-darkCard dark:text-darkTextMuted border border-slate-200 dark:border-darkBorder rounded-lg text-xs md:text-sm shadow-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
                 <a href="{% url 'gestion:dashboard' %}" class="inline-flex items-center hover:text-primary-600 dark:hover:text-amber-400 transition-colors font-medium">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                    </svg>
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                     Dashboard
                 </a>
             </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.categoria.nombre }}</span>
-                </div>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.nombre }}</span>
-                </div>
-            </li>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">{{ apunte.tema.nombre }}</span>
-                </div>
-            </li>
+            <li><div class="flex items-center"><svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg><span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.categoria.nombre }}</span></div></li>
+            <li><div class="flex items-center"><svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg><span class="ml-1 md:ml-2 font-medium text-slate-700 dark:text-slate-300">{{ apunte.tema.familia.nombre }}</span></div></li>
+            <li aria-current="page"><div class="flex items-center"><svg class="w-5 h-5 text-slate-300 dark:text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg><span class="ml-1 md:ml-2 font-semibold text-slate-400 dark:text-amber-500">{{ apunte.tema.nombre }}</span></div></li>
         </ol>
     </nav>
 
-    <!-- CABECERA DEL APUNTE -->
     <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 shadow-sm flex flex-col space-y-4">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pb-4 border-b border-slate-100 dark:border-darkBorder/40">
             <div class="space-y-1">
@@ -51,103 +26,168 @@
                     {{ apunte.titulo }}
                 </h1>
                 <div class="flex flex-wrap gap-2 text-xs text-slate-400 mt-2 items-center">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-darkBg text-slate-600 dark:text-slate-400">
-                        {{ apunte.get_formato_display }}
-                    </span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-darkBg text-slate-600 dark:text-slate-400">{{ apunte.get_formato_display }}</span>
+                    <span>&bull;</span>
+                    <span>📖 {{ apunte.tiempo_lectura }} de lectura</span>
                     <span>&bull;</span>
                     <span>Creado el {{ apunte.fecha_creacion|date:"d/m/Y H:i" }}</span>
                     <span>&bull;</span>
                     <span>Actualizado el {{ apunte.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
                 </div>
+                {% if apunte.tags.all %}
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                    {% for tag in apunte.tags.all %}
+                    <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800">{{ tag.nombre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
 
-            <!-- FORMULARIO DE ACTUALIZACIÓN DE ESTADO -->
             <div class="flex items-center gap-3 self-start md:self-auto flex-wrap md:flex-nowrap">
-                <!-- FORMULARIO DE ACTUALIZACIÓN DE ESTADO -->
                 <div class="bg-slate-50 dark:bg-darkBg p-4 border border-slate-200 dark:border-darkBorder rounded-lg flex items-center space-x-3">
                     <form method="POST" action="{% url 'gestion:apunte_detail' apunte.slug %}" class="flex items-center space-x-2">
                         {% csrf_token %}
-                        <label for="estado" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Estado de Estudio:</label>
+                        <label for="estado" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Estado:</label>
                         <select name="estado" id="estado" onchange="this.form.submit()" class="bg-white dark:bg-darkCard border border-slate-300 dark:border-darkBorder text-slate-800 dark:text-slate-200 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-1.5 focus:outline-none transition-colors">
                             {% for key, val in estados_choices %}
                                 <option value="{{ key }}" {% if apunte.estado == key %}selected{% endif %}>{{ val }}</option>
                             {% endfor %}
                         </select>
                     </form>
-                    
-                    <!-- Badge Visual del Estado -->
                     <div>
                         {% if apunte.estado == 'NO_EMPEZADO' %}
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">
-                            No empezado
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900">No empezado</span>
                         {% elif apunte.estado == 'EN_PROGRESO' %}
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
-                            En progreso
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900">En progreso</span>
                         {% else %}
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">
-                            Completado
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900">Completado</span>
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Botón de Editar -->
                 <a href="{% url 'gestion:apunte_editar' apunte.slug %}" class="inline-flex items-center gap-1.5 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg shadow-sm transition-all duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                    Editar Apunte
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Editar
                 </a>
             </div>
         </div>
 
-        <!-- RELACIONADOS EN LA PARTE SUPERIOR (HORIZONTAL) -->
+        <div class="flex flex-wrap items-center gap-2 pt-1 border-b border-slate-100 dark:border-darkBorder/40 pb-3">
+            <span class="text-xs font-bold text-slate-500 dark:text-darkTextMuted uppercase tracking-wider">Acciones:</span>
+            <button onclick="toggleFavorito({{ apunte.id }})" id="fav-btn-{{ apunte.id }}" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all {% if apunte.favorito %}bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800{% else %}bg-slate-50 dark:bg-darkBg text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-darkBorder hover:text-amber-500{% endif %}">
+                <svg class="w-3.5 h-3.5" fill="{% if apunte.favorito %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                <span id="fav-label-{{ apunte.id }}">{% if apunte.favorito %}Favorito{% else %}Guardar{% endif %}</span>
+            </button>
+            <div class="relative inline-block" x-data="{ open: false }">
+                <button onclick="document.getElementById('export-dropdown').classList.toggle('hidden')" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-darkBg text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-darkBorder hover:text-primary-600 dark:hover:text-primary-400 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Exportar
+                </button>
+                <div id="export-dropdown" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl shadow-xl z-50 py-1">
+                    <a href="{% url 'gestion:apunte_exportar' apunte.slug 'html' %}" target="_blank" class="block px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-darkBg transition-colors">Exportar HTML</a>
+                    <a href="{% url 'gestion:apunte_exportar' apunte.slug 'pdf' %}" target="_blank" class="block px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-darkBg transition-colors">Exportar PDF</a>
+                </div>
+            </div>
+            <button onclick="copyToClipboard()" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 dark:bg-darkBg text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-darkBorder hover:text-emerald-600 dark:hover:text-emerald-400 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span id="copy-label">Copiar enlace</span>
+            </button>
+        </div>
+
         {% if apuntes_relacionados %}
         <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-            <span class="text-xs font-bold text-slate-500 dark:text-darkTextMuted uppercase tracking-wider whitespace-nowrap">
-                Otros en {{ apunte.tema.nombre }}:
-            </span>
+            <span class="text-xs font-bold text-slate-500 dark:text-darkTextMuted uppercase tracking-wider whitespace-nowrap">Otros en {{ apunte.tema.nombre }}:</span>
             <div class="flex flex-wrap gap-2">
                 {% for rel in apuntes_relacionados %}
                 <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-[#1c2028] border border-slate-200 dark:border-darkBorder text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-darkBg transition-all">
                     <span>{{ rel.titulo }}</span>
-                    {% if rel.estado == 'COMPLETADO' %}
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1.5" title="Completado"></span>
-                    {% elif rel.estado == 'EN_PROGRESO' %}
-                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 ml-1.5" title="En progreso"></span>
-                    {% else %}
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400 ml-1.5" title="No empezado"></span>
-                    {% endif %}
+                    {% if rel.estado == 'COMPLETADO' %}<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-1.5" title="Completado"></span>
+                    {% elif rel.estado == 'EN_PROGRESO' %}<span class="w-1.5 h-1.5 rounded-full bg-sky-500 ml-1.5" title="En progreso"></span>
+                    {% else %}<span class="w-1.5 h-1.5 rounded-full bg-rose-400 ml-1.5" title="No empezado"></span>{% endif %}
                 </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if apunte.relacionado_a.all %}
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span class="text-xs font-bold text-slate-500 dark:text-darkTextMuted uppercase tracking-wider whitespace-nowrap">Vinculados:</span>
+            <div class="flex flex-wrap gap-2">
+                {% for rel in apunte.relacionado_a.all %}
+                <a href="{% url 'gestion:apunte_detail' rel.slug %}" class="inline-flex items-center px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-950/50 transition-all">{{ rel.titulo }}</a>
                 {% endfor %}
             </div>
         </div>
         {% endif %}
     </div>
 
-    <!-- CONTENIDO COMPLETO (ANCHO TOTAL DEL CONTENEDOR) -->
-    <article class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl p-6 md:p-8 shadow-sm">
-        <!-- Render del apunte con el filtro seguro custom -->
-        <div class="prose max-w-none dark:prose-invert 
-                    prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-amber-500
-                    prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-darkBorder prose-h1:pb-2
-                    prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4
-                    prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:my-4
-                    prose-a:text-primary-600 dark:prose-a:text-amber-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-amber-300
-                    prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-slate-100
-                    prose-code:text-primary-600 dark:prose-code:text-amber-400 prose-code:bg-slate-100 dark:prose-code:bg-darkBg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
-                    prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-0
-                    prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
-                    prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
-                    prose-li:my-1.5
-                    prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-darkTextMuted prose-blockquote:my-4
-                    prose-table:w-full prose-table:border-collapse prose-table:my-6
-                    prose-th:bg-slate-50 dark:prose-th:bg-[#1c2028] prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-darkBorder prose-th:font-semibold prose-th:text-left
-                    prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-darkBorder">
-            {{ apunte|render_content }}
+    <article class="bg-white dark:bg-darkCard border border-slate-200 dark:border-darkBorder rounded-xl shadow-sm flex flex-col lg:flex-row">
+        <div class="p-6 md:p-8 flex-1 min-w-0">
+            <div class="prose max-w-none dark:prose-invert
+                        prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-amber-500
+                        prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-100 dark:prose-h1:border-darkBorder prose-h1:pb-2
+                        prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4
+                        prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:my-4
+                        prose-a:text-primary-600 dark:prose-a:text-amber-400 prose-a:underline hover:prose-a:text-primary-800 dark:hover:prose-a:text-amber-300
+                        prose-strong:font-bold prose-strong:text-slate-900 dark:prose-strong:text-slate-100
+                        prose-code:text-primary-600 dark:prose-code:text-amber-400 prose-code:bg-slate-100 dark:prose-code:bg-darkBg prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
+                        prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-0
+                        prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4
+                        prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4
+                        prose-li:my-1.5
+                        prose-blockquote:border-l-4 prose-blockquote:border-primary-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-slate-500 dark:prose-blockquote:text-darkTextMuted prose-blockquote:my-4
+                        prose-table:w-full prose-table:border-collapse prose-table:my-6
+                        prose-th:bg-slate-50 dark:prose-th:bg-[#1c2028] prose-th:p-3 prose-th:border prose-th:border-slate-200 dark:prose-th:border-darkBorder prose-th:font-semibold prose-th:text-left
+                        prose-td:p-3 prose-td:border prose-td:border-slate-200 dark:prose-td:border-darkBorder"
+                 id="apunte-content">
+                {{ apunte|render_content }}
+            </div>
         </div>
     </article>
 </div>
+
+<script>
+function toggleFavorito(apunteId) {
+    const btn = document.getElementById('fav-btn-' + apunteId);
+    const label = document.getElementById('fav-label-' + apunteId);
+    fetch('/ajax/apunte/' + apunteId + '/favorito/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.favorito) {
+            label.textContent = 'Favorito';
+            btn.classList.remove('bg-slate-50', 'dark:bg-darkBg', 'text-slate-500', 'dark:text-slate-400', 'border-slate-200', 'dark:border-darkBorder', 'hover:text-amber-500');
+            btn.classList.add('bg-amber-50', 'dark:bg-amber-950/30', 'text-amber-600', 'dark:text-amber-400', 'border-amber-200', 'dark:border-amber-800');
+            btn.querySelector('svg').setAttribute('fill', 'currentColor');
+        } else {
+            label.textContent = 'Guardar';
+            btn.classList.remove('bg-amber-50', 'dark:bg-amber-950/30', 'text-amber-600', 'dark:text-amber-400', 'border-amber-200', 'dark:border-amber-800');
+            btn.classList.add('bg-slate-50', 'dark:bg-darkBg', 'text-slate-500', 'dark:text-slate-400', 'border-slate-200', 'dark:border-darkBorder', 'hover:text-amber-500');
+            btn.querySelector('svg').setAttribute('fill', 'none');
+        }
+    });
+}
+
+function copyToClipboard() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        const label = document.getElementById('copy-label');
+        label.textContent = '¡Copiado!';
+        setTimeout(() => { label.textContent = 'Copiar enlace'; }, 2000);
+    });
+}
+
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('export-dropdown');
+    if (dd && !dd.classList.contains('hidden') && !e.target.closest('#export-dropdown') && !e.target.closest('button[onclick*="export-dropdown"]')) {
+        dd.classList.add('hidden');
+    }
+});
+</script>
 {% endblock %}

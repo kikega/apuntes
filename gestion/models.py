@@ -1,11 +1,10 @@
 from django.db import models
 from django.utils.text import slugify
+from django.utils import timezone
 from typing import Any
 
+
 class Categoria(models.Model):
-    """
-    Representa una categoría principal para organizar los apuntes (ej. Programación, Bases de Datos).
-    """
     nombre: str = models.CharField(max_length=100, unique=True, verbose_name="Nombre")
     slug: str = models.SlugField(max_length=120, unique=True, blank=True, verbose_name="Slug")
     descripcion: str = models.TextField(blank=True, verbose_name="Descripción")
@@ -25,9 +24,6 @@ class Categoria(models.Model):
 
 
 class Familia(models.Model):
-    """
-    Representa una familia o subcategoría dentro de una categoría principal (ej. Backend, Frontend).
-    """
     nombre: str = models.CharField(max_length=100, verbose_name="Nombre")
     slug: str = models.SlugField(max_length=120, unique=True, blank=True, verbose_name="Slug")
     categoria: Categoria = models.ForeignKey(
@@ -55,9 +51,6 @@ class Familia(models.Model):
 
 
 class Tema(models.Model):
-    """
-    Representa un tema específico dentro de una familia (ej. Django, FastAPI).
-    """
     nombre: str = models.CharField(max_length=100, verbose_name="Nombre")
     slug: str = models.SlugField(max_length=120, unique=True, blank=True, verbose_name="Slug")
     familia: Familia = models.ForeignKey(
@@ -84,10 +77,25 @@ class Tema(models.Model):
         return f"{self.familia.nombre} ➔ {self.nombre}"
 
 
+class Tag(models.Model):
+    nombre: str = models.CharField(max_length=50, unique=True, verbose_name="Nombre")
+    slug: str = models.SlugField(max_length=60, unique=True, blank=True, verbose_name="Slug")
+
+    class Meta:
+        verbose_name = "Etiqueta"
+        verbose_name_plural = "Etiquetas"
+        ordering = ["nombre"]
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.nombre
+
+
 class Apunte(models.Model):
-    """
-    Representa el fichero o apunte técnico en sí, conteniendo el contenido en Markdown/RST.
-    """
     ESTADOS = [
         ("NO_EMPEZADO", "No empezado"),
         ("EN_PROGRESO", "En progreso"),
@@ -110,6 +118,11 @@ class Apunte(models.Model):
     estado: str = models.CharField(
         max_length=15, choices=ESTADOS, default="NO_EMPEZADO", verbose_name="Estado de Estudio"
     )
+    tags = models.ManyToManyField(Tag, related_name="apuntes", blank=True, verbose_name="Etiquetas")
+    relacionado_a = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, verbose_name="Apuntes Relacionados"
+    )
+    favorito: bool = models.BooleanField(default=False, verbose_name="Favorito")
     fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Creación")
     fecha_actualizacion = models.DateTimeField(auto_now=True, verbose_name="Última Actualización")
 
@@ -120,22 +133,24 @@ class Apunte(models.Model):
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.slug:
-            base_slug = slugify(self.titulo)
-            self.slug = base_slug
+            self.slug = slugify(self.titulo)
             count = 1
             while Apunte.objects.filter(slug=self.slug).exclude(id=self.id).exists():
-                self.slug = f"{base_slug}-{count}"
+                self.slug = f"{slugify(self.titulo)}-{count}"
                 count += 1
         super().save(*args, **kwargs)
+
+    @property
+    def tiempo_lectura(self) -> str:
+        palabras = len(self.contenido.split())
+        minutos = max(1, round(palabras / 200))
+        return f"{minutos} min"
 
     def __str__(self) -> str:
         return self.titulo
 
 
 class ImagenApunte(models.Model):
-    """
-    Almacena las imágenes locales asociadas a un apunte para poder renderizarlas.
-    """
     apunte: Apunte = models.ForeignKey(
         Apunte, on_delete=models.CASCADE, related_name="imagenes", verbose_name="Apunte"
     )

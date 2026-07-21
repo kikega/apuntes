@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ apunte.titulo }} | NotesDev</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #1e293b; line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; color: #0f172a; }
+        h1 { font-size: 1.875rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h2 { font-size: 1.5rem; margin-top: 1.75rem; }
+        pre { background: #1e293b; color: #f8f8f2; padding: 1.25rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.875rem; }
+        code { background: #f1f5f9; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        pre code { background: transparent; padding: 0; }
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem; border: 1px solid #e2e8f0; text-align: left; }
+        th { background: #f8fafc; font-weight: 600; }
+        blockquote { border-left: 4px solid #34A6F4; padding-left: 1rem; color: #64748b; font-style: italic; }
+        ul, ol { padding-left: 1.5rem; }
+        .meta { font-size: 0.875rem; color: #94a3b8; margin-bottom: 2rem; }
+        .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .tag { background: #F0F9FF; color: #2984D1; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <h1>{{ apunte.titulo }}</h1>
+    <div class="meta">
+        <span>{{ apunte.get_formato_display }}</span> &bull;
+        <span>{{ apunte.tiempo_lectura }} de lectura</span> &bull;
+        <span>{{ apunte.tema.familia.categoria.nombre }} › {{ apunte.tema.familia.nombre }} › {{ apunte.tema.nombre }}</span>
+    </div>
+    {% if apunte.tags.all %}
+    <div class="tags">{% for tag in apunte.tags.all %}<span class="tag">{{ tag.nombre }}</span>{% endfor %}</div>
+    {% endif %}
+    <div>{{ rendered }}</div>
+</body>
+</html>
