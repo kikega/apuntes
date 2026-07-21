@@ -61,7 +61,7 @@
     </script>
 
     <!-- Custom CSS for Pygments syntax highlighting & other details -->
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}?v=1.5">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     
     <!-- Script para Modo Oscuro Persistente -->
     <script>
@@ -205,97 +205,6 @@
         </main>
     </div>
 
-    <!-- Script de interactividad básica (Sidebar y Modo Oscuro) -->
-    <script>
-        // Toggle de Dropdowns del Sidebar (Categorías / Familias)
-        function toggleSidebarDropdown(id) {
-            const dropdown = document.getElementById('dropdown-' + id);
-            const chevron = document.getElementById('chevron-' + id);
-            if (dropdown && chevron) {
-                dropdown.classList.toggle('hidden');
-                chevron.classList.toggle('rotate-180');
-            }
-        }
-
-        // Auto-expande la categoría activa en la carga
-        document.addEventListener('DOMContentLoaded', () => {
-            // Buscar links activos de familias
-            const activeFamilyLinks = document.querySelectorAll('[id^="dropdown-cat-"] a.bg-slate-100\\/50, [id^="dropdown-cat-"] a.text-primary-600, [id^="dropdown-cat-"] a.dark\\:text-amber-500');
-            activeFamilyLinks.forEach(link => {
-                const parentDropdown = link.closest('[id^="dropdown-cat-"]');
-                if (parentDropdown) {
-                    parentDropdown.classList.remove('hidden');
-                    const catId = parentDropdown.id.replace('dropdown-', '');
-                    const chevron = document.getElementById('chevron-' + catId);
-                    if (chevron) {
-                        chevron.classList.add('rotate-180');
-                    }
-                }
-            });
-
-            // Buscar link de categoría seleccionado directamente
-            const activeCatWrapper = document.querySelector('.bg-primary-50\\/50, .dark\\:bg-darkBg');
-            if (activeCatWrapper) {
-                const parentDiv = activeCatWrapper.closest('.space-y-1');
-                if (parentDiv) {
-                    const dropdown = parentDiv.querySelector('[id^="dropdown-cat-"]');
-                    if (dropdown) {
-                        dropdown.classList.remove('hidden');
-                        const catId = dropdown.id.replace('dropdown-', '');
-                        const chevron = document.getElementById('chevron-' + catId);
-                        if (chevron) {
-                            chevron.classList.add('rotate-180');
-                        }
-                    }
-                }
-            }
-        });
-
-        // Sidebar Móvil Toggle
-        const openSidebarBtn = document.getElementById('open-sidebar-btn');
-        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
-        const sidebar = document.getElementById('sidebar');
-
-        if (openSidebarBtn && sidebar) {
-            openSidebarBtn.addEventListener('click', () => {
-                sidebar.classList.remove('-translate-x-full');
-            });
-        }
-
-        if (closeSidebarBtn && sidebar) {
-            closeSidebarBtn.addEventListener('click', () => {
-                sidebar.classList.add('-translate-x-full');
-            });
-        }
-
-        // Configuración e Interactividad del Modo Oscuro
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-
-        // Mostrar el icono correcto en base al estado del DOM
-        if (document.documentElement.classList.contains('dark')) {
-            themeToggleLightIcon.classList.remove('hidden');
-        } else {
-            themeToggleDarkIcon.classList.remove('hidden');
-        }
-
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', function() {
-                // Alternar iconos
-                themeToggleDarkIcon.classList.toggle('hidden');
-                themeToggleLightIcon.classList.toggle('hidden');
-
-                // Alternar clase dark y persistir en localStorage
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
-                }
-            });
-        }
-    </script>
+    <script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>

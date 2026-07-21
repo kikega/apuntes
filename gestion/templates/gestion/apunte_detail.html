@@ -1,4 +1,5 @@
 {% extends 'gestion/base.html' %}
+{% load static %}
 {% load custom_filters %}
 
 {% block title %}{{ apunte.titulo }} | NotesDev{% endblock %}
@@ -148,46 +149,10 @@
 </div>
 
 <script>
-function toggleFavorito(apunteId) {
-    const btn = document.getElementById('fav-btn-' + apunteId);
-    const label = document.getElementById('fav-label-' + apunteId);
-    fetch('/ajax/apunte/' + apunteId + '/favorito/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'X-Requested-With': 'XMLHttpRequest',
-        }
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.favorito) {
-            label.textContent = 'Favorito';
-            btn.classList.remove('bg-slate-50', 'dark:bg-darkBg', 'text-slate-500', 'dark:text-slate-400', 'border-slate-200', 'dark:border-darkBorder', 'hover:text-amber-500');
-            btn.classList.add('bg-amber-50', 'dark:bg-amber-950/30', 'text-amber-600', 'dark:text-amber-400', 'border-amber-200', 'dark:border-amber-800');
-            btn.querySelector('svg').setAttribute('fill', 'currentColor');
-        } else {
-            label.textContent = 'Guardar';
-            btn.classList.remove('bg-amber-50', 'dark:bg-amber-950/30', 'text-amber-600', 'dark:text-amber-400', 'border-amber-200', 'dark:border-amber-800');
-            btn.classList.add('bg-slate-50', 'dark:bg-darkBg', 'text-slate-500', 'dark:text-slate-400', 'border-slate-200', 'dark:border-darkBorder', 'hover:text-amber-500');
-            btn.querySelector('svg').setAttribute('fill', 'none');
-        }
+    initDetail({
+        favUrlTmpl: '/ajax/apunte/{id}/favorito/',
+        csrfToken: '{{ csrf_token }}',
     });
-}
-
-function copyToClipboard() {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-        const label = document.getElementById('copy-label');
-        label.textContent = '¡Copiado!';
-        setTimeout(() => { label.textContent = 'Copiar enlace'; }, 2000);
-    });
-}
-
-document.addEventListener('click', function(e) {
-    const dd = document.getElementById('export-dropdown');
-    if (dd && !dd.classList.contains('hidden') && !e.target.closest('#export-dropdown') && !e.target.closest('button[onclick*="export-dropdown"]')) {
-        dd.classList.add('hidden');
-    }
-});
 </script>
+<script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'gestion/base.html' %}
+{% load static %}
 
 {% block title %}{{ action }} Apunte | NotesDev{% endblock %}
 
@@ -158,191 +159,16 @@
     </form>
 </div>
 
+<input type="hidden" id="apunte-id-data" value="{% if apunte %}{{ apunte.id }}{% endif %}">
+
 <script>
-let autoSaveTimer = null;
-const STORAGE_KEY = 'apunte_draft_{{ apunte.id|default:"new" }}';
-
-function toggleHelpPanel() {
-    document.getElementById('help-panel').classList.toggle('hidden');
-}
-
-function insertMarkup(type) {
-    const textarea = document.getElementById('id_contenido');
-    const formato = document.getElementById('id_formato').value;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-    const selectedText = text.substring(start, end);
-    let before = '', after = '', placeholder = '';
-
-    if (formato === 'MD') {
-        const m = {
-            bold: ['**', '**', 'texto en negrita'],
-            italic: ['*', '*', 'texto en cursiva'],
-            h1: ['# ', '\n', 'Título 1'],
-            h2: ['## ', '\n', 'Título 2'],
-            code_inline: ['`', '`', 'código'],
-            code_block: ['```python\n', '\n```', '# código'],
-            link: ['[', '](url)', 'texto del enlace'],
-            ul: ['- ', '', 'Elemento'],
-            ol: ['1. ', '', 'Elemento'],
-            table: ['\n| Cabecera 1 | Cabecera 2 |\n| --- | --- |\n| Celda 1 | Celda 2 |\n', '', ''],
-        };
-        if (m[type]) { before = m[type][0]; after = m[type][1]; placeholder = m[type][2]; }
-    } else {
-        const r = {
-            bold: ['**', '**', 'texto en negrita'],
-            italic: ['*', '*', 'texto en cursiva'],
-            h1: ['', '\n' + '='.repeat(Math.max((selectedText || 'Título 1').length, 4)) + '\n', 'Título 1'],
-            h2: ['', '\n' + '-'.repeat(Math.max((selectedText || 'Título 2').length, 4)) + '\n', 'Título 2'],
-            code_inline: ['``', '``', 'código'],
-            code_block: ['.. code-block:: python\n\n    ', '', '# código'],
-            link: ['`', ' <url>`_', 'texto del enlace'],
-            ul: ['* ', '', 'Elemento'],
-            ol: ['#. ', '', 'Elemento'],
-            table: ['\n+------------+------------+\n| Cabecera 1 | Cabecera 2 |\n+============+============+\n| Celda 1    | Celda 2    |\n+------------+------------+\n', '', ''],
-        };
-        if (r[type]) { before = r[type][0]; after = r[type][1]; placeholder = r[type][2]; }
-    }
-
-    const insertText = selectedText || placeholder;
-    let replacement = before + insertText + after;
-    if (formato === 'RST' && (type === 'h1' || type === 'h2') && !selectedText) {
-        const ch = type === 'h1' ? '=' : '-';
-        replacement = insertText + '\n' + ch.repeat(insertText.length) + '\n';
-    }
-    textarea.value = text.substring(0, start) + replacement + text.substring(end);
-    textarea.focus();
-    textarea.setSelectionRange(start + before.length, start + before.length + insertText.length);
-    triggerAutoSave();
-}
-
-function switchEditorTab(tab) {
-    const be = document.getElementById('tab-btn-editor');
-    const bp = document.getElementById('tab-btn-preview');
-    const ce = document.getElementById('editor-container');
-    const cp = document.getElementById('preview-container');
-    if (tab === 'editor') {
-        be.classList.add('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
-        be.classList.remove('border-transparent', 'text-slate-500', 'dark:text-slate-400');
-        bp.classList.remove('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
-        bp.classList.add('border-transparent', 'text-slate-500', 'dark:text-slate-400');
-        ce.classList.remove('hidden'); cp.classList.add('hidden');
-    } else {
-        bp.classList.add('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
-        bp.classList.remove('border-transparent', 'text-slate-500', 'dark:text-slate-400');
-        be.classList.remove('border-primary-600', 'text-primary-600', 'dark:text-amber-500', 'dark:border-amber-500');
-        be.classList.add('border-transparent', 'text-slate-500', 'dark:text-slate-400');
-        ce.classList.add('hidden'); cp.classList.remove('hidden');
-        loadPreview();
-    }
-}
-
-function loadPreview() {
-    const cp = document.getElementById('preview-container');
-    cp.innerHTML = '<div class="flex items-center justify-center py-16"><svg class="animate-spin h-8 w-8 text-primary-600 dark:text-amber-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg></div>';
-    const fd = new FormData();
-    fd.append('contenido', document.getElementById('id_contenido').value);
-    fd.append('formato', document.getElementById('id_formato').value);
-    const ai = "{% if apunte %}{{ apunte.id }}{% endif %}";
-    if (ai) fd.append('apunte_id', ai);
-    fetch("{% url 'gestion:ajax_apunte_preview' %}", {
-        method: 'POST',
-        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-        body: fd
-    }).then(r => r.text()).then(html => { cp.innerHTML = html; })
-    .catch(e => { cp.innerHTML = '<div class="text-rose-500 p-4">Error: ' + e.message + '</div>'; });
-}
-
-function triggerAutoSave() {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-        const data = {
-            contenido: document.getElementById('id_contenido').value,
-            titulo: document.getElementById('{{ form.titulo.id_for_label }}')?.value || '',
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }, 2000);
-}
-
-(function() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            if (data.contenido && document.getElementById('id_contenido').value === '') {
-                document.getElementById('id_contenido').value = data.contenido;
-            }
-        } catch(e) {}
-    }
-})();
-
-document.getElementById('id_contenido')?.addEventListener('input', triggerAutoSave);
-
-document.getElementById('upload-image-btn')?.addEventListener('click', function() {
-    document.getElementById('image-upload-input').click();
-});
-
-function uploadImage(input) {
-    if (!input.files.length) return;
-    const file = input.files[0];
-    const fd = new FormData();
-    fd.append('imagen', file);
-    fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-    fd.append('apunte_id', '{% if apunte %}{{ apunte.id }}{% endif %}');
-    fetch('/ajax/imagen/subir/', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-        if (data.url) {
-            const ta = document.getElementById('id_contenido');
-            const fmt = document.getElementById('id_formato').value;
-            const md = fmt === 'MD' ? `![${data.descripcion}](${data.url})` : `.. image:: ${data.url}\n   :alt: ${data.descripcion}`;
-            ta.value += '\n' + md + '\n';
-            triggerAutoSave();
-        }
-    }).catch(e => { alert('Error al subir imagen'); });
-    input.value = '';
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const input = document.getElementById('dropzone-input');
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        input.files = dt.files;
-        uploadImage(input);
-    }
-}
-
-function handleDropFile(input) { uploadImage(input); }
-
-document.getElementById('drop-zone')?.addEventListener('click', function() {
-    document.getElementById('dropzone-input').click();
-});
-
-function createTagAndSelect() {
-    const input = document.getElementById('new-tag-input');
-    const name = input.value.trim();
-    if (!name) return;
-    input.disabled = true;
-    fetch("{% url 'gestion:ajax_tag_crear' %}", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-        body: JSON.stringify({ nombre: name }),
-    }).then(r => r.json()).then(data => {
-        if (data.success) {
-            const sel = document.getElementById('{{ form.tags.id_for_label }}');
-            const opt = document.createElement('option');
-            opt.value = data.item.id; opt.text = data.item.nombre; opt.selected = true;
-            sel.appendChild(opt);
-            input.value = '';
-        } else {
-            alert(data.errors?.nombre || 'Error al crear etiqueta');
-        }
-    }).catch(() => { alert('Error de conexión'); })
-    .finally(() => { input.disabled = false; input.focus(); });
-}
+    initEditor({
+        previewUrl: '{% url "gestion:ajax_apunte_preview" %}',
+        tagCreateUrl: '{% url "gestion:ajax_tag_crear" %}',
+        imageUploadUrl: '{% url "gestion:ajax_imagen_subir" %}',
+        csrfToken: '{{ csrf_token }}',
+        storageKey: 'apunte_draft_{% if apunte %}{{ apunte.id }}{% else %}new{% endif %}',
+    });
 </script>
+<script src="{% static 'js/editor.js' %}"></script>
 {% endblock %}
